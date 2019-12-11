@@ -1,11 +1,14 @@
 import React from 'react';
 import './App.css';
-import { Cell } from './../Routing';
+import { Field } from './../Routing';
 
 const App = () => {
   return (
     <div id="App">
-      <Cell/>
+        <div id="game">
+            <Field/>
+            <Field/>
+        </div>
     </div>
   );
 };

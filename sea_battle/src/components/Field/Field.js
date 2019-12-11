@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
+import { Row, config } from './../Routing';
 import './Field.css';
-
 // Размер поля
 const size = 10;
 // Двумерный массив (квадрат), заданного размера, заполненный нулями
 const initialField = (new Array(size)).fill(
-    (new Array(size)).fill(0)
+    (new Array(size)).fill(1)
 );
 
 const Field = () => {
@@ -13,7 +13,11 @@ const Field = () => {
 
     return(
         <div id="field">
-            1
+            {
+                field.map((row, index) =>
+                    <Row key={index}
+                         rowData={row}/>)
+            }
         </div>
     )
 };

@@ -1,3 +1,7 @@
 #App {
   margin: 100px;
 }
+
+#game {
+  display: flex;
+}

@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import './Cell.css';
 
-const Cell = () => {
+const Cell = ({ value }) => {
     return (
-        <div id="cell">
-            1
+        <div id={value ? 'cell' : 'cell_empty'}>
+
         </div>
     )
 };

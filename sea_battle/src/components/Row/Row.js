@@ -1,9 +1,15 @@
 import React, { useEffect } from 'react';
+import { Cell } from './../Routing';
+import './Row.css';
 
-const Row = () => {
+const Row = ({ rowData }) => {
     return (
         <div id="row">
-            1
+            {
+                rowData.map((cell, index) =>
+                    <Cell key={index}
+                          value={cell}/>)
+            }
         </div>
     )
 };
