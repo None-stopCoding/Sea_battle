@@ -7,7 +7,6 @@ const App = () => {
     <div id="App">
         <div id="game">
             <Field/>
-            <Field/>
         </div>
     </div>
   );

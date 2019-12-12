@@ -37,9 +37,11 @@ const buildShip = (field, head, size) => {
     // TODO ИСПРАВИТЬ КОСТЫЛИ НАХРЕН ОТСЮДОВА
     // - двойной else
     // - повтор функционала в case
+    // console.log(head);
     if (size) {
         do {
-            switch (vectors[random(0, vectors.length - 1)]) {
+            // switch (vectors[random(0, vectors.length - 1)]) {
+            switch (2) {
                 case 1:
                     break;
                 case 2:
@@ -69,10 +71,53 @@ const buildShip = (field, head, size) => {
                     }
                     break;
             }
-        } while(coords.length === 1);
+        } while(coords.length === 1 && vectors.length);
     }
 
+    generateSafeArea(field, coords);
+
     return coords;
+};
+
+// TODO отпимизировать этот долбанный костыль
+// Грубо говоря пробегаемся по каждой клетке корабля и смотрим
+// во все 8 условий (4 угла 4 стороны)
+const generateSafeArea = (field, coords) => {
+    const safe = config.safeValue;
+
+    console.log(coords);
+    // проврека 3-х нижних и верхних клеток
+    const checkTopBottom = (pos, cell) => {
+        if (field[pos]) {
+            if (!field[pos][cell.x]) {
+                field[pos][cell.x] = safe;
+            }
+
+            if (field[pos][cell.x + 1] && !field[pos][cell.x + 1]) {
+                field[pos[cell.x + 1]] = safe;
+            }
+
+            if (field[pos][cell.x - 1] && !field[pos][cell.x - 1]) {
+                field[pos[cell.x - 1]] = safe;
+            }
+        }
+    };
+
+    // проверка левой и правой клетки
+    const checkLeftRight = (pos, cell) => {
+        if (field[cell.y][pos]) {
+            if (!field[cell.y][pos]) {
+                field[cell.y][pos] = safe;
+            }
+        }
+    };
+
+    coords.forEach(cell => {
+        checkTopBottom(cell.y - 1, cell);
+        checkTopBottom(cell.y + 1, cell);
+        checkLeftRight(cell.x + 1, cell);
+        checkLeftRight(cell.x - 1, cell);
+    });
 };
 
 const createListOfEmptyCells = (field) =>

@@ -17,5 +17,6 @@ export const config = {
             'size': 1,
             'amount': 4
         }
-    }
+    },
+    'safeValue': 5
 };
