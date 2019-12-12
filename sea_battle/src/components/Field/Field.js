@@ -34,6 +34,9 @@ const buildShip = (field, head, size) => {
     let shipCells = [];
 
     // нет смысла выбирать направление для корабля длиной в одну клетку
+    // TODO ИСПРАВИТЬ КОСТЫЛИ НАХРЕН ОТСЮДОВА
+    // - двойной else
+    // - повтор функционала в case
     if (size) {
         do {
             switch (vectors[random(0, vectors.length - 1)]) {
@@ -46,7 +49,11 @@ const buildShip = (field, head, size) => {
                         if (shipCells.every(cell => !cell)) {
                             shipCells.forEach((cell, index) =>
                                 coords.push(new Point(head.y, head.x + index + 1)))
+                        } else {
+                            vectors.splice(vectors.indexOf(2), 1);
                         }
+                    } else {
+                        vectors.splice(vectors.indexOf(2), 1);
                     }
                     break;
                 case 3:
@@ -63,27 +70,6 @@ const buildShip = (field, head, size) => {
                     break;
             }
         } while(coords.length === 1);
-
-
-        // // проверка вверх
-        // if (head.y + size >= 0) {
-        //
-        //
-        //     if (field[head.y]
-        //         .slice(head.x + 1, head.x + 1 + size)
-        //         .every(cell => !cell)) {
-        //
-        //         directions.push(1);
-        //     }
-        // }
-        //
-
-        //
-        // // проверка вниз
-        //
-
-        //
-        // directions[random(0, directions.length - 1)]
     }
 
     return coords;
