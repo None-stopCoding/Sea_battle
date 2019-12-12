@@ -1,25 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { config } from './../../Config';
 import { Row } from './../Routing';
 import './Field.css';
 
-const Point = (row, cell) => {
+// Двумерный массив (квадрат), заданного размера, заполненный нулями
+const initialField = (new Array(config.fieldSize)).fill(
+    (new Array(config.fieldSize)).fill(0)
+);
+
+function Point(row, cell) {
     this.x = cell;
     this.y = row;
-};
-
-// Размер поля
-const size = config.fieldSize;
-// Двумерный массив (квадрат), заданного размера, заполненный нулями
-const initialField = (new Array(size)).fill(
-    (new Array(size)).fill(0)
-);
+}
 
 const random = (min, max) =>
     Math.round(min - 0.5 + Math.random() * (max - min + 1));
 
 const renderField = (field, status) => {
-    Object.entries(status).forEach(([ship, params]) => {
+    Object.entries(status).forEach(([ _, params ]) => {
        params.units.forEach(place =>
            place.forEach(point => field[point.y][point.x] = params.size))
     });
@@ -27,23 +25,92 @@ const renderField = (field, status) => {
     return field;
 };
 
-const getAvailableDirections = (field, point, size) => {
+const buildShip = (field, head, size) => {
+    // возможные направления: вверх, вправо, вниз, влево
+    let vectors = [1, 2, 3, 4];
+    // список клеток корабля
+    let coords = [head];
+    // клетки корабля без головной
+    let shipCells = [];
 
+    // нет смысла выбирать направление для корабля длиной в одну клетку
+    if (size) {
+        do {
+            switch (vectors[random(0, vectors.length - 1)]) {
+                case 1:
+                    break;
+                case 2:
+                    // проверка вправо
+                    if (head.x + size < config.fieldSize) {
+                        shipCells = field[head.y].slice(head.x + 1, head.x + 1 + size);
+                        if (shipCells.every(cell => !cell)) {
+                            shipCells.forEach((cell, index) =>
+                                coords.push(new Point(head.y, head.x + index + 1)))
+                        }
+                    }
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    // проверка влево
+                    if (head.x - size >= 0) {
+                        shipCells = field[head.y].slice(head.x - 1, head.x - 1 - size);
+                        if (shipCells.every(cell => !cell)) {
+                            shipCells.forEach((cell, index) =>
+                                coords.push(new Point(head.y, head.x - index - 1)))
+                        }
+                    }
+                    break;
+            }
+        } while(coords.length === 1);
+
+
+        // // проверка вверх
+        // if (head.y + size >= 0) {
+        //
+        //
+        //     if (field[head.y]
+        //         .slice(head.x + 1, head.x + 1 + size)
+        //         .every(cell => !cell)) {
+        //
+        //         directions.push(1);
+        //     }
+        // }
+        //
+
+        //
+        // // проверка вниз
+        //
+
+        //
+        // directions[random(0, directions.length - 1)]
+    }
+
+    return coords;
 };
 
-const createListOfEmptyCells = (field) => {
-
-};
+const createListOfEmptyCells = (field) =>
+    field.flat().map((cell, index) => {
+        if (!cell) {
+            return new Point(Math.floor(index / 10), index % 10);
+        }
+    }).filter(cell => cell instanceof Point);
 
 const generateShip = (field, size) => {
     const empty = createListOfEmptyCells(field);
 
-    let directions = [];
+    // список координат корабля
+    let coords = [];
+    // если корабль данной длины невозможно построить в этой точке
+    // то пытаемся еще раз
     do {
-        let point = pickRandomShipPosition(empty);
-        directions = getAvailableDirections(field, point, size);
-    } while(directions.length);
+        // выбираем из списка пустых клеток случаную
+        const point = empty[random(0, empty.length - 1)];
+        // выбираем направление корабля и сторим его
+        coords = buildShip(field, point, size - 1);
+    } while(coords.length !== size);
 
+    return coords;
 };
 
 const Field = () => {
@@ -51,10 +118,11 @@ const Field = () => {
     const [gameStatus, changeGameStatus] = useState(config.ships);
     const [mode, changeMode] = useState('prepare');
 
-    const componentDidMount = () => {
+    useEffect(() => {
         changeGameStatus(
             Object.fromEntries(
-                Object.entries(config.ships).map(([ship, params]) => {
+                Object.entries(config.ships)
+                    .map(([ship, params]) => {
                         let iter = params.amount;
                         params['units'] = [];
 
@@ -67,7 +135,7 @@ const Field = () => {
             )
         );
         setField(renderField(field, gameStatus));
-    };
+    }, []);
 
     return(
         <div id="field">
