@@ -3,7 +3,7 @@ import './Cell.css';
 
 const Cell = ({ value }) => {
     return (
-        <div id={value ? 'cell' : 'cell_empty'}>
+        <div className={!value || value === 5 ? 'cell empty' : 'cell'}>
 
         </div>
     )

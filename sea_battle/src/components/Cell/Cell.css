@@ -1,4 +1,4 @@
-#cell {
+.cell {
     width: 30px;
     height: 30px;
     border: 1px solid #000;
@@ -6,14 +6,9 @@
     margin: 2px;
     transition: all .1s ease-in-out;
 }
-/*todo исправить к чертям*/
-#cell_empty {
+
+.empty {
     background: aliceblue;
-    width: 30px;
-    height: 30px;
-    border: 1px solid #000;
-    margin: 2px;
-    transition: all .1s ease-in-out;
 }
 
 #cell:hover, #cell_empty:hover {

@@ -34,15 +34,30 @@ const buildShip = (field, head, size) => {
     let shipCells = [];
 
     // нет смысла выбирать направление для корабля длиной в одну клетку
-    // TODO ИСПРАВИТЬ КОСТЫЛИ НАХРЕН ОТСЮДОВА
+    // TODO ВЫПИЛИТЬ КОСТЫЛИ НАХРЕН ОТСЮДОВА
     // - двойной else
     // - повтор функционала в case
-    // console.log(head);
     if (size) {
         do {
-            // switch (vectors[random(0, vectors.length - 1)]) {
-            switch (2) {
+            switch (vectors[random(0, vectors.length - 1)]) {
                 case 1:
+                    // проверка вверх
+                    if (head.y - size >= 0) {
+                        let iter = size;
+                        shipCells = [];
+
+                        while(iter--) {
+                            shipCells.push(field[head.y - iter][head.x])
+                        }
+                        if (shipCells.every(cell => !cell)) {
+                            shipCells.forEach((cell, index) =>
+                                coords.push(new Point(head.y, head.x - index - 1)))
+                        } else {
+                            vectors.splice(vectors.indexOf(1), 1);
+                        }
+                    } else {
+                        vectors.splice(vectors.indexOf(1), 1);
+                    }
                     break;
                 case 2:
                     // проверка вправо
@@ -59,23 +74,45 @@ const buildShip = (field, head, size) => {
                     }
                     break;
                 case 3:
+                    // проверка вниз
+                    if (head.y + size < config.fieldSize) {
+                        let iter = 0;
+                        shipCells = [];
+
+                        while(++iter > size) {
+                            shipCells.push(field[head.y + iter][head.x])
+                        }
+                        if (shipCells.every(cell => !cell)) {
+                            shipCells.forEach((cell, index) =>
+                                coords.push(new Point(head.y, head.x + index + 1)))
+                        } else {
+                            vectors.splice(vectors.indexOf(3), 1);
+                        }
+                    } else {
+                        vectors.splice(vectors.indexOf(3), 1);
+                    }
                     break;
                 case 4:
                     // проверка влево
                     if (head.x - size >= 0) {
-                        shipCells = field[head.y].slice(head.x - 1, head.x - 1 - size);
+                        shipCells = field[head.y].slice(head.x - size, head.x);
                         if (shipCells.every(cell => !cell)) {
                             shipCells.forEach((cell, index) =>
                                 coords.push(new Point(head.y, head.x - index - 1)))
+                        } else {
+                            vectors.splice(vectors.indexOf(4), 1);
                         }
+                    } else {
+                        vectors.splice(vectors.indexOf(4), 1);
                     }
+                    break;
+                default:
                     break;
             }
         } while(coords.length === 1 && vectors.length);
     }
 
     generateSafeArea(field, coords);
-
     return coords;
 };
 
@@ -84,28 +121,28 @@ const buildShip = (field, head, size) => {
 // во все 8 условий (4 угла 4 стороны)
 const generateSafeArea = (field, coords) => {
     const safe = config.safeValue;
+    const size = config.fieldSize;
 
-    console.log(coords);
     // проврека 3-х нижних и верхних клеток
     const checkTopBottom = (pos, cell) => {
-        if (field[pos]) {
+        if (0 <= pos && pos < size) {
             if (!field[pos][cell.x]) {
                 field[pos][cell.x] = safe;
             }
 
-            if (field[pos][cell.x + 1] && !field[pos][cell.x + 1]) {
-                field[pos[cell.x + 1]] = safe;
+            if ((cell.x + 1) < size && !field[pos][cell.x + 1]) {
+                field[pos][cell.x + 1] = safe;
             }
 
-            if (field[pos][cell.x - 1] && !field[pos][cell.x - 1]) {
-                field[pos[cell.x - 1]] = safe;
+            if ((cell.x - 1) >= 0 && !field[pos][cell.x - 1]) {
+                field[pos][cell.x - 1] = safe;
             }
         }
     };
 
     // проверка левой и правой клетки
     const checkLeftRight = (pos, cell) => {
-        if (field[cell.y][pos]) {
+        if (0 <= pos && pos < size) {
             if (!field[cell.y][pos]) {
                 field[cell.y][pos] = safe;
             }
@@ -166,6 +203,7 @@ const Field = () => {
             )
         );
         setField(renderField(field, gameStatus));
+        console.log(gameStatus);
     }, []);
 
     return(
