@@ -154,7 +154,6 @@ const generateShip = (field, size) => {
 const Field = () => {
     const [field, setField] = useState(initialField.map(row => row.slice()));
     const [gameStatus, changeGameStatus] = useState(config.ships);
-    const [mode, changeMode] = useState('prepare');
 
     useEffect(() => {
         let newField = field.map(row => row.slice());
