@@ -8,8 +8,6 @@ const initialField = (new Array(config.fieldSize)).fill(
     (new Array(config.fieldSize)).fill(0)
 );
 
-const [field, setField] = useState(initialField.map(row => row.slice()));
-
 function Point(row, cell) {
     this.x = cell;
     this.y = row;
@@ -18,7 +16,7 @@ function Point(row, cell) {
 const random = (min, max) =>
     Math.round(min - 0.5 + Math.random() * (max - min + 1));
 
-const buildShip = (head, size) => {
+const locateShip = (field, head, size) => {
     // возможные направления: вверх, вправо, вниз, влево
     let vectors = [1, 2, 3, 4];
     // список клеток корабля
@@ -26,7 +24,7 @@ const buildShip = (head, size) => {
     // клетки корабля без головной
     let shipCells = [];
 
-    debugger;
+    // debugger;
     // нет смысла выбирать направление для корабля длиной в одну клетку
     // TODO ВЫПИЛИТЬ КОСТЫЛИ НАХРЕН ОТСЮДОВА
     // - двойной else
@@ -110,20 +108,12 @@ const buildShip = (head, size) => {
         } while(coords.length === 1 && vectors.length);
     }
 
-    // debugger;
-    // ставим корабль на поле (size конечно с головой)
-    coords.forEach(cell => field[cell.y][cell.x] = size + 1);
-    // строим зону "неприкосновенности" вокруг корабля
-    generateSafeArea(coords);
-
-    // вызываем callback
-    setField(field);
     return coords;
 };
 
 // Грубо говоря пробегаемся по каждой клетке корабля и смотрим
 // во все 8 условий (4 угла 4 стороны)
-const generateSafeArea = (coords) => {
+const generateSafeArea = (field, coords) => {
     const safe = config.safeValue,
         size = config.fieldSize,
         sides = [-1, 0, 1];
@@ -145,15 +135,15 @@ const generateSafeArea = (coords) => {
     console.log(field);
 };
 
-const createListOfEmptyCells = () =>
+const createListOfEmptyCells = (field) =>
     field.flat().map((cell, index) => {
         if (!cell) {
             return new Point(Math.floor(index / 10), index % 10);
         }
     }).filter(cell => cell instanceof Point);
 
-const generateShip = (size) => {
-    const empty = createListOfEmptyCells();
+const generateShip = (field, size) => {
+    const empty = createListOfEmptyCells(field);
     // список координат корабля
     let coords = [];
     // если корабль данной длины невозможно построить в этой точке
@@ -162,14 +152,19 @@ const generateShip = (size) => {
         // debugger;
         // выбираем из списка пустых клеток случаную
         const point = empty[random(0, empty.length - 1)];
-        // выбираем направление корабля и сторим его
-        coords = buildShip(point, size - 1);
+        // выбираем направление корабля
+        coords = locateShip(point, field, size - 1);
     } while(coords.length !== size);
 
-    return coords;
+    // ставим корабль на поле (size конечно с головой)
+    coords.forEach(cell => field[cell.y][cell.x] = size + 1);
+    // строим зону "неприкосновенности" вокруг корабля
+    generateSafeArea(field, coords);
+    return {coords: coords, field: field};
 };
 
 const Field = () => {
+    const [field, setField] = useState(initialField.map(row => row.slice()));
     const [gameStatus, changeGameStatus] = useState(config.ships);
     const [mode, changeMode] = useState('prepare');
 
@@ -181,7 +176,11 @@ const Field = () => {
                         let iter = params.amount;
                         params['units'] = [];
                         while (iter--) {
-                            params['units'].push(generateShip(params.size));
+                            let copyField = field.map(row => row.slice());
+                            const { coords, renderedField } = generateShip(copyField, params.size);
+
+                            params['units'].push(coords);
+                            setField(renderedField);
                         }
                         return [ship, params];
                     })
