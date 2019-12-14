@@ -16,7 +16,7 @@ function Point(row, cell) {
 const random = (min, max) =>
     Math.round(min - 0.5 + Math.random() * (max - min + 1));
 
-const locateShip = (field, head, size) => {
+const locateShip = (head, field, size) => {
     // возможные направления: вверх, вправо, вниз, влево
     let vectors = [1, 2, 3, 4];
     // список клеток корабля
@@ -38,9 +38,11 @@ const locateShip = (field, head, size) => {
                         let iter = size;
                         shipCells = [];
 
-                        while(iter--) {
-                            shipCells.push(field[head.y - iter][head.x])
+                        console.log(1111);
+                        while(iter) {
+                            shipCells.push(field[head.y - iter--][head.x])
                         }
+                        console.log(1111);
                         console.log(1, head, size, shipCells);
                         if (shipCells.every(cell => !cell)) {
                             shipCells.forEach((cell, index) =>
@@ -56,7 +58,7 @@ const locateShip = (field, head, size) => {
                     // проверка вправо
                     if (head.x + size < config.fieldSize) {
                         shipCells = field[head.y].slice(head.x + 1, head.x + 1 + size);
-                        console.log(2, head, size, shipCells);
+                        // console.log(2, head, size, shipCells);
                         if (shipCells.every(cell => !cell)) {
                             shipCells.forEach((cell, index) =>
                                 coords.push(new Point(head.y, head.x + index + 1)))
@@ -76,7 +78,7 @@ const locateShip = (field, head, size) => {
                         while(++iter <= size) {
                             shipCells.push(field[head.y + iter][head.x])
                         }
-                        console.log(3, head, size, shipCells);
+                        // console.log(3, head, size, shipCells);
                         if (shipCells.every(cell => !cell)) {
                             shipCells.forEach((cell, index) =>
                                 coords.push(new Point(head.y + index + 1, head.x)))
@@ -91,7 +93,7 @@ const locateShip = (field, head, size) => {
                     // проверка влево
                     if (head.x - size >= 0) {
                         shipCells = field[head.y].slice(head.x - size, head.x);
-                        console.log(4, head, size, shipCells);
+                        // console.log(4, head, size, shipCells);
                         if (shipCells.every(cell => !cell)) {
                             shipCells.forEach((cell, index) =>
                                 coords.push(new Point(head.y, head.x - index - 1)))
@@ -156,11 +158,14 @@ const generateShip = (field, size) => {
         coords = locateShip(point, field, size - 1);
     } while(coords.length !== size);
 
-    // ставим корабль на поле (size конечно с головой)
-    coords.forEach(cell => field[cell.y][cell.x] = size + 1);
+    // ставим корабль на поле
+    coords.forEach(cell => field[cell.y][cell.x] = size);
     // строим зону "неприкосновенности" вокруг корабля
     generateSafeArea(field, coords);
-    return {coords: coords, field: field};
+    return {
+        coords: coords,
+        renderedField: field
+    };
 };
 
 const Field = () => {
@@ -169,6 +174,7 @@ const Field = () => {
     const [mode, changeMode] = useState('prepare');
 
     useEffect(() => {
+        let newField = field.map(row => row.slice());
         changeGameStatus(
             Object.fromEntries(
                 Object.entries(config.ships)
@@ -176,17 +182,17 @@ const Field = () => {
                         let iter = params.amount;
                         params['units'] = [];
                         while (iter--) {
-                            let copyField = field.map(row => row.slice());
-                            const { coords, renderedField } = generateShip(copyField, params.size);
+                            const { coords, renderedField } = generateShip(newField, params.size);
 
                             params['units'].push(coords);
-                            setField(renderedField);
+                            newField = renderedField;
                         }
                         return [ship, params];
                     })
             )
         );
         console.log(gameStatus);
+        setField(newField);
     }, []);
 
     return(
