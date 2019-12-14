@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import _ from 'underscore';
 import { config } from './../../Config';
 import { Row } from './../Routing';
 import './Field.css';
@@ -22,105 +23,51 @@ function Point(row, cell) {
     this.y = row;
 }
 
-/**
- * Отдает случайное число от min до max
- * @param min
- * @param max
- * @returns {number}
- */
-const random = (min, max) =>
-    Math.round(min - 0.5 + Math.random() * (max - min + 1));
-
 const locateShip = (head, field, size) => {
-    let vectors = [1, 2, 3, 4],     // возможные направления: вверх, вправо, вниз, влево
-        coords = [head],            // список клеток корабля
-        shipCells = [];             // клетки корабля без головной
+    let coords = [head];            // список координат клеток корабля
+
+    const directions = [
+        { 'futureShip': head.y - size, 'offset': { 'y': -1, 'x': 0 } },     // вверх
+        { 'futureShip': head.x + size, 'offset': { 'y': 0, 'x': 1 } },      // вправо
+        { 'futureShip': head.y + size, 'offset': { 'y': 1, 'x': 0 } },      // вниз
+        { 'futureShip': head.x - size, 'offset': { 'y': 0, 'x': -1 } }      // влево
+    ];
+
+    const tryDirection = (randomDirection, { futureShip, offset }) => {
+        if (0 <= futureShip && futureShip < config.fieldSize) {
+            let shipCells = [];
+            let iter = size;
+
+            while(iter) {
+                shipCells.push(field[head.y + iter * offset.y][head.x + iter * offset.x]);
+                iter--;
+            }
+
+            if (shipCells.every(cell => !cell)) {
+                shipCells.forEach((cell, index) =>
+                    coords.push(
+                        new Point(head.y + (index + 1) * offset.y,
+                            head.x + (index + 1) * offset.x)
+                    )
+                )
+            }
+        }
+    };
 
     // нет смысла выбирать направление для корабля длиной в одну клетку
-    // TODO ВЫПИЛИТЬ КОСТЫЛИ НАХРЕН ОТСЮДОВА
-    // - двойной else
-    // - повтор функционала в case
     if (size) {
         do {
-            switch (vectors[random(0, vectors.length - 1)]) {
-                case 1:
-                    // проверка вверх
-                    if (head.y - size >= 0) {
-                        let iter = size;
-                        shipCells = [];
-
-                        while(iter) {
-                            shipCells.push(field[head.y - iter--][head.x])
-                        }
-
-                        if (shipCells.every(cell => !cell)) {
-                            shipCells.forEach((cell, index) =>
-                                coords.push(new Point(head.y - index - 1, head.x)))
-                        } else {
-                            vectors.splice(vectors.indexOf(1), 1);
-                        }
-                    } else {
-                        vectors.splice(vectors.indexOf(1), 1);
-                    }
-                    break;
-                case 2:
-                    // проверка вправо
-                    if (head.x + size < config.fieldSize) {
-                        shipCells = field[head.y].slice(head.x + 1, head.x + 1 + size);
-                        if (shipCells.every(cell => !cell)) {
-                            shipCells.forEach((cell, index) =>
-                                coords.push(new Point(head.y, head.x + index + 1)))
-                        } else {
-                            vectors.splice(vectors.indexOf(2), 1);
-                        }
-                    } else {
-                        vectors.splice(vectors.indexOf(2), 1);
-                    }
-                    break;
-                case 3:
-                    // проверка вниз
-                    if (head.y + size < config.fieldSize) {
-                        let iter = 0;
-                        shipCells = [];
-
-                        while(++iter <= size) {
-                            shipCells.push(field[head.y + iter][head.x])
-                        }
-                        if (shipCells.every(cell => !cell)) {
-                            shipCells.forEach((cell, index) =>
-                                coords.push(new Point(head.y + index + 1, head.x)))
-                        } else {
-                            vectors.splice(vectors.indexOf(3), 1);
-                        }
-                    } else {
-                        vectors.splice(vectors.indexOf(3), 1);
-                    }
-                    break;
-                case 4:
-                    // проверка влево
-                    if (head.x - size >= 0) {
-                        shipCells = field[head.y].slice(head.x - size, head.x);
-                        if (shipCells.every(cell => !cell)) {
-                            shipCells.forEach((cell, index) =>
-                                coords.push(new Point(head.y, head.x - index - 1)))
-                        } else {
-                            vectors.splice(vectors.indexOf(4), 1);
-                        }
-                    } else {
-                        vectors.splice(vectors.indexOf(4), 1);
-                    }
-                    break;
-                default:
-                    break;
+            const randomDirection = _.random(directions.length - 1);
+            tryDirection(randomDirection, directions[randomDirection]);
+            if (coords.length === 1) {
+                directions.splice(randomDirection, 1);
             }
-        } while(coords.length === 1 && vectors.length);
-    }
 
+        } while(coords.length === 1 && directions.length);
+    }
     return coords;
 };
 
-// Грубо говоря пробегаемся по каждой клетке корабля и смотрим
-// во все 8 условий (4 угла 4 стороны)
 /**
  * Грубо говоря пробегаемся по каждой клетке корабля и смотрим
  *  во все 8 условий (4 угла 4 стороны)
@@ -177,7 +124,7 @@ const generateShip = (field, size) => {
 
     do {
         // выбираем из списка пустых клеток случаную
-        const point = empty[random(0, empty.length - 1)];
+        const point = empty[_.random(empty.length - 1)];
         // выбираем направление корабля и получаем его координаты (или коор-ту первой вершины)
         // size - 1 - так как первая вершина уже выбрана
         coords = locateShip(point, field, size - 1);
@@ -204,14 +151,13 @@ const Field = () => {
             Object.fromEntries(
                 Object.entries(config.ships)
                     .map(([ship, params]) => {
-                        let iter = params.amount;
-                        params['units'] = [];
-                        while (iter--) {
+                        _.times(params.amount, () => {
                             const { coords, renderedField } = generateShip(newField, params.size);
 
                             params['units'].push(coords);
                             newField = renderedField;
-                        }
+                        });
+
                         return [ship, params];
                     })
             )

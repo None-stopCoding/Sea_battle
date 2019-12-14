@@ -4,11 +4,12 @@
     border: 1px solid #000;
     background: aqua;
     margin: 2px;
-    transition: all .1s ease-in-out;
+    transition: scale .1s ease-in-out, background-color .3s ease .5s;
 }
 
 .empty {
     background: aliceblue;
+    transition: scale .1s ease-in-out;
 }
 
 .cell:hover {
