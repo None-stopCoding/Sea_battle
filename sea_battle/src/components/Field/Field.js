@@ -25,6 +25,10 @@ const renderField = (field, status) => {
     return field;
 };
 
+const thing = () => {
+
+};
+
 const buildShip = (field, head, size) => {
     // возможные направления: вверх, вправо, вниз, влево
     let vectors = [1, 2, 3, 4];
@@ -39,7 +43,9 @@ const buildShip = (field, head, size) => {
     // - повтор функционала в case
     if (size) {
         do {
-            switch (vectors[random(0, vectors.length - 1)]) {
+            const v = vectors[random(0, vectors.length - 1)];
+            // console.log(head, size, v);
+            switch (v) {
                 case 1:
                     // проверка вверх
                     if (head.y - size >= 0) {
@@ -51,7 +57,7 @@ const buildShip = (field, head, size) => {
                         }
                         if (shipCells.every(cell => !cell)) {
                             shipCells.forEach((cell, index) =>
-                                coords.push(new Point(head.y, head.x - index - 1)))
+                                coords.push(new Point(head.y - index - 1, head.x)))
                         } else {
                             vectors.splice(vectors.indexOf(1), 1);
                         }
@@ -79,12 +85,12 @@ const buildShip = (field, head, size) => {
                         let iter = 0;
                         shipCells = [];
 
-                        while(++iter > size) {
+                        while(++iter <= size) {
                             shipCells.push(field[head.y + iter][head.x])
                         }
                         if (shipCells.every(cell => !cell)) {
                             shipCells.forEach((cell, index) =>
-                                coords.push(new Point(head.y, head.x + index + 1)))
+                                coords.push(new Point(head.y + index + 1, head.x)))
                         } else {
                             vectors.splice(vectors.indexOf(3), 1);
                         }
@@ -154,6 +160,7 @@ const generateSafeArea = (field, coords) => {
         checkTopBottom(cell.y + 1, cell);
         checkLeftRight(cell.x + 1, cell);
         checkLeftRight(cell.x - 1, cell);
+        console.log(field);
     });
 };
 
