@@ -21,7 +21,7 @@ const Cell = ({ value, handleClick, mode, playFor }) => {
             !value) changeClass('cell empty');
         else changeClass('cell');
 
-        console.log(className);
+        // console.log(className);
     });
 
     return (

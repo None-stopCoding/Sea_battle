@@ -1,3 +1,7 @@
 #field {
     margin: 15px;
 }
+
+#row {
+    display: flex;
+}
