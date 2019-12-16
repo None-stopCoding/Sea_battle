@@ -44,7 +44,7 @@ const locateShip = (head, field, size) => {
         { 'futureShip': head.x - size, 'offset': { 'y': 0, 'x': -1 } }      // влево
     ];
 
-    const tryDirection = (randomDirection, { futureShip, offset }) => {
+    const tryDirection = ({ futureShip, offset }) => {
         if (0 <= futureShip && futureShip < config.fieldSize) {
             let shipCells = [];
             let iter = size;
@@ -69,7 +69,7 @@ const locateShip = (head, field, size) => {
     if (size) {
         do {
             const randomDirection = _.random(directions.length - 1);
-            tryDirection(randomDirection, directions[randomDirection]);
+            tryDirection(directions[randomDirection]);
             if (coords.length === 1) {
                 directions.splice(randomDirection, 1);
             }
@@ -114,7 +114,7 @@ const generateSafeArea = (field, coords) => {
 const createListOfEmptyCells = (field) =>
     field.flat().map((cell, index) => {
         if (!cell) {
-            return new Point(Math.floor(index / 10), index % 10);
+            return new Point(Math.floor(index / config.fieldSize), index % config.fieldSize);
         }
     }).filter(cell => cell instanceof Point);
 
@@ -151,9 +151,19 @@ const generateShip = (field, size) => {
     };
 };
 
-const Field = () => {
+const Field = ({ mode, playFor }) => {
     const [field, setField] = useState(initialField.map(row => row.slice()));
     const [gameStatus, changeGameStatus] = useState(config.ships);
+
+    function handleClick(row, cell) {
+        console.log(mode, playFor, field[row][cell]);
+        if (mode === 'play' && playFor === 'player' && field[row][cell] >= 0) {
+            console.log('clicked');
+            let newField = field.map(row => row.slice());
+            newField[row][cell] = !field[row][cell] ? -5 : (-1) * field[row][cell];
+            setField(newField);
+        }
+    }
 
     useEffect(() => {
         let newField = field.map(row => row.slice());
@@ -175,12 +185,23 @@ const Field = () => {
         setField(newField);
     }, []);
 
+    // useEffect(() => console.log(mode, playFor));
+
     return(
         <div id="field">
             {
-                field.map((row, index) =>
-                    <Row key={index}
-                         rowData={row}/>)
+                field.map((row, index) => {
+                    // console.log(field);
+                    return (
+                        <Row key={index}
+                             rowIndex={index}
+                             rowData={row}
+                             mode={mode}
+                             playFor={playFor}
+                             handleClick={handleClick}/>
+                        );
+                }
+                    )
             }
         </div>
     )
