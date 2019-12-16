@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Чат</title>
+    <style>
+        .main{
+            margin-left: 10px;
+        }
+        #name ,#message, #btn{
+            margin-top: 15px;
+        }
+
+        .btn{
+            color: white;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+<div class="main">
+        <h3>Чат</h3>
+            <form id="form">
+                <label>Имя</label>
+                <input type="text" name="name" id="name" placeholder="Введите имя" >
+                <br>
+                <label>Сообщение</label>
+                <input name="message" id="message"  placeholder="Введите сообщение">
+                <br>
+                <input type="submit" id="btn" value="Отправить" class="btn">
+            </form>
+            <h3>Сообщения:</h3>
+            <div id="all_mess"></div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+    $(function() {
+        var socket = io.connect();
+        var $form = $("#form");
+        var $name = $("#name");
+        var $textarea = $("#message");
+        var $all_messages = $("#all_mess");
+
+        $form.submit(function(event) {
+            event.preventDefault();
+            socket.emit('send mess', {mess: $textarea.val(), name: $name.val()});
+            $textarea.val('');
+        });
+
+        socket.on('add mess', function(data) {
+            $all_messages.append("<div><b>" + data.name + "</b>: " + data.mess + "</div>");
+        });
+    });
+</script>
+</body>
+</html>
