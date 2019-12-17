@@ -21,40 +21,47 @@
 </head>
 <body>
 <div class="main">
-        <h3>Чат</h3>
-            <form id="form">
-                <label>Имя</label>
-                <input type="text" name="name" id="name" placeholder="Введите имя" >
-                <br>
-                <label>Сообщение</label>
-                <input name="message" id="message"  placeholder="Введите сообщение">
-                <br>
-                <input type="submit" id="btn" value="Отправить" class="btn">
-            </form>
-            <h3>Сообщения:</h3>
-            <div id="all_mess"></div>
+    <h3>Чат</h3>
+    <form id="form">
+        <label>Имя</label>
+        <input type="text" name="name" id="name" placeholder="Введите имя" >
+        <br>
+        <label>Сообщение</label>
+        <input name="message" id="message"  placeholder="Введите сообщение">
+        <br>
+        <input type="submit" id="btn" value="Отправить" class="btn">
+    </form>
+    <h3>Сообщения:</h3>
+    <div id="messages"></div>
 </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
-    $(function() {
-        var socket = io.connect();
-        var $form = $("#form");
-        var $name = $("#name");
-        var $textarea = $("#message");
-        var $all_messages = $("#all_mess");
 
-        $form.submit(function(event) {
-            event.preventDefault();
-            socket.emit('send mess', {mess: $textarea.val(), name: $name.val()});
-            $textarea.val('');
-        });
+    (function() {
+        document.addEventListener("DOMContentLoaded", load);
+        function load() {
+            let socket = io.connect();
+            let userForm = document.getElementById('form');
+            let userName = document.getElementById('name');
+            let userMessage = document.getElementById('message');
+            let messages = document.getElementById('messages');
 
-        socket.on('add mess', function(data) {
-            $all_messages.append("<div><b>" + data.name + "</b>: " + data.mess + "</div>");
-        });
-    });
+            userForm.onsubmit = function(event) {
+                event.preventDefault();
+                socket.emit('send mess', {
+                    name: userName.value,
+                    mess: userMessage.value
+                });
+                userMessage.value = '';
+            };
+
+            socket.on('add mess', function (data) {
+                messages.innerHTML += ("<div><b>" + data.name + "</b>: " + data.mess + "</div>");
+            });
+        }
+    }());
+
 </script>
 </body>
 </html>

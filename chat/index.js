@@ -1,12 +1,12 @@
-var express = require('express');
-var app = express();
-var server = require('http').createServer(app);
-var io = require('socket.io').listen(server);
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io').listen(server);
 
 server.listen(8080);
 
-app.get('/', function(request, respons) {
-    respons.sendFile(__dirname + '/index.html');
+app.get('/', function(request, response) {
+    response.sendFile(__dirname + '/index.html');
 });
 
 connections = [];
