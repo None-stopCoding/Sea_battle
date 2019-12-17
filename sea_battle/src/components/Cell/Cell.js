@@ -3,7 +3,6 @@ import { config } from './../../Config';
 import './Cell.css';
 
 /**
- * TODO Оптимизировать это зло
  * @param value
  * @param handleClick
  * @param mode
@@ -15,34 +14,28 @@ const Cell = ({ value, handleClick, mode, playFor }) => {
     const [idName, changeId] = useState('empty');
 
     useEffect(() => {
-        if (mode === 'play') {
-            if (value === (-1) * config.safeValue) {
-                changeId('missed');
-            }
-            else if (value < 0) {
-                changeId('killed');
-            }
+        if (value === (-1) * config.safeValue) {
+            changeId('missed');
+        }
+        else if (value < 0) {
+            changeId('killed');
         }
     });
 
     const getClassName = () => {
-        if (mode === 'play') {
-            if (playFor === 'player') {
-                if (idName === 'killed') {
-                    return 'cell';
-                }
-                return 'cell empty';
-            } else {
-                if (!value || value === config.safeValue || value === (-1) * config.safeValue) {
-                    return 'cell empty';
-                }
-                return 'cell';
+        let className = 'cell';
+        if ((mode === 'play' && playFor === 'AI') ||
+            (mode === 'prepare' && playFor === 'player')) {
+
+            if (!value || Math.abs(value) === config.safeValue) {
+                className += ' empty';
             }
         } else {
-            if (value && value !== config.safeValue) return 'cell';
-
-            return 'cell empty';
+            if (idName !== 'killed') {
+                className += ' empty';
+            }
         }
+        return className;
     };
 
     return (
