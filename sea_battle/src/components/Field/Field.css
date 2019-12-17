@@ -5,3 +5,40 @@
 #row {
     display: flex;
 }
+
+.cell {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #A9A9A9;
+    border-radius: 2px;
+    background: aqua;
+    margin: 1px;
+    transition: scale .1s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.empty {
+    background: aliceblue;
+}
+
+.cell:hover {
+    transform: scale(1.1);
+}
+
+#missed {
+    background-color: #000;
+    border-radius: 50%;
+    width: 5px;
+    height: 5px;
+}
+
+.killed {
+    border-color: #000;
+}
+
+#killed {
+
+}
+
