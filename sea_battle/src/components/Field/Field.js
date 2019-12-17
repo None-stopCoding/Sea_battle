@@ -4,7 +4,7 @@ import './Field.css';
 import {config} from "../../Config";
 
 /**
- * TODO интегрировать Cell компоннет
+ * TODO подумать над оптимизацией
  * @param field
  * @param mode
  * @param playFor

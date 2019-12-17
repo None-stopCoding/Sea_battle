@@ -34,18 +34,27 @@ const Game = () => {
         );
 
     const configureField = (field, row, cell) => {
-        field[row][cell] = !field[row][cell] ? -5 : (-1) * field[row][cell];
+        field[row][cell] = (-1) * (!field[row][cell] ? config.safeValue : field[row][cell]);
         return field[row][cell];
     };
 
-    const isWinner = (ships, row, cell) => {
-        return false;
+    const damageShip = (ships, row, cell) => {
+        // Object.entries(ships).forEach(([ship, params]) => {
+        //     params['units'].forEach()
+        // })
     };
+
+    const isWinner = (ships) =>
+        !Object.entries(ships).filter(([ship, params]) =>
+            !!params['units'].filter(unit =>
+                !!unit.length
+            ).length
+        ).length;
 
     useEffect(() => {
         if (mode === 'prepare') {
-            let newAIField = AIField.map(row => [...row]),
-                newPlayerField = playerField.map(row => [...row]);
+            let newAIField = initialField.map(row => [...row]),
+                newPlayerField = initialField.map(row => [...row]);
 
             setAIShips(setShips(newAIField));
             setAIField(newAIField);
@@ -62,18 +71,28 @@ const Game = () => {
 
             configureField(copyAIField, row, cell);
             setAIField(copyAIField);
-            if (isWinner(AIShips, row, cell)) {
-                alert('Поздравляем! Вы победили!');
-                changeMode('prepare');
+            if (copyAIField[row][cell] !== (-1) * config.safeValue) {
+                // damageShip(AIShips, row, cell);
+                if (isWinner(AIShips)) {
+                    alert('Поздравляем! Вы победили!');
+                    changeMode('prepare');
+                }
             } else {
                 let copyPlayerField = playerField.map(row => [...row]),
-                    copyGuessField = guessField.map(row => [...row]);
-                const { rowAI, cellAI } = AI(guessField);
+                    copyGuessField = guessField.map(row => [...row]),
+                    value = 0,
+                    victory = false;
 
-                copyGuessField[rowAI][cellAI] = configureField(copyPlayerField, rowAI, cellAI);
+                do {
+                    const { rowAI, cellAI } = AI(copyGuessField);
+                    copyGuessField[rowAI][cellAI] = value = configureField(copyPlayerField, rowAI, cellAI);
+                    // damageShip(playerShips, rowAI, cellAI);
+                    victory = isWinner(playerShips, rowAI, cellAI);
+                } while (value !== (-1) * config.safeValue && !victory);
+
                 setGuess(copyGuessField);
                 setPlayerField(copyPlayerField);
-                if (isWinner(playerShips)) {
+                if (victory) {
                     alert('Это поражение...Увы :(');
                     changeMode('prepare');
                 }
@@ -96,7 +115,7 @@ const Game = () => {
                            handleClick={handleFieldClick}/>
                 }
             </div>
-            <button id="play_button" onClick={() => changeMode(mode === 'prepare' ? 'play' : 'prepare')}>
+            <button id="play_button" onClick={() => changeMode(mode => mode === 'prepare' ? 'play' : 'prepare')}>
                 {mode === 'prepare' ? 'Play!' : 'Restart!'}
             </button>
         </div>
