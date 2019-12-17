@@ -1,15 +1,13 @@
 import React from 'react';
 import './App.css';
-import { Field } from './../Routing';
+import { Game } from './../Routing';
 
 const App = () => {
-  return (
-    <div id="App">
-        <div id="game">
-            <Field/>
+    return (
+        <div id="App">
+            <Game/>
         </div>
-    </div>
-  );
+    );
 };
 
 export default App;
