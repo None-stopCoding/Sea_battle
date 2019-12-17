@@ -5,28 +5,22 @@ import { Field } from './../Routing';
 import { initialField, AI, generateShip } from "../../utils/Routing";
 import {config} from "../../Config";
 
-
-//
-// function handleClick(row, cell) {
-//     // console.log(mode, playFor, field[row][cell]);
-//
-// }
-
-
-//
-
-
+/**
+ * TODO подумать над оптимизацией
+ * @returns {*}
+ * @constructor
+ */
 const Game = () => {
     const [mode, changeMode] = useState('prepare');
-    const [AIGuessedField, guess] = useState(initialField.map(row => row.slice()));
-    const [AIField, setAIField] = useState(initialField.map(row => row.slice()));
-    const [AIShips, setAIShips] = useState(config.ships);
-    const [playerField, setPlayerField] = useState(initialField.map(row => row.slice()));
-    const [playerShips, setPlayerShips] = useState(config.ships);
+    const [guessField, setGuess] = useState(initialField.map(row => [...row]));
+    const [AIField, setAIField] = useState(initialField.map(row => [...row]));
+    const [AIShips, setAIShips] = useState(JSON.parse(JSON.stringify(config.ships)));
+    const [playerField, setPlayerField] = useState(initialField.map(row => [...row]));
+    const [playerShips, setPlayerShips] = useState(JSON.parse(JSON.stringify(config.ships)));
 
     const setShips = (newField) =>
         Object.fromEntries(
-            Object.entries(config.ships)
+            Object.entries(JSON.parse(JSON.stringify(config.ships)))
                 .map(([ship, params]) => {
                     _.times(params.amount, () => {
                         const { coords, renderedField } = generateShip(newField, params.size);
@@ -40,23 +34,18 @@ const Game = () => {
         );
 
     const configureField = (field, row, cell) => {
-        if (field[row][cell] >= 0) {
-            // console.log('clicked');
-            field[row][cell] = !field[row][cell] ? -5 : (-1) * field[row][cell];
-        }
-
+        field[row][cell] = !field[row][cell] ? -5 : (-1) * field[row][cell];
         return field[row][cell];
     };
 
-    const isWinner = ships => {
+    const isWinner = (ships, row, cell) => {
         return false;
     };
 
     useEffect(() => {
         if (mode === 'prepare') {
-            console.log(mode);
-            let newAIField = AIField.map(row => row.slice()),
-                newPlayerField = playerField.map(row => row.slice());
+            let newAIField = AIField.map(row => [...row]),
+                newPlayerField = playerField.map(row => [...row]);
 
             setAIShips(setShips(newAIField));
             setAIField(newAIField);
@@ -68,19 +57,23 @@ const Game = () => {
 
     function handleFieldClick(row, cell, playFor)
     {
-        if (mode === 'play' && playFor === 'player') {
-            console.log('clicked');
-            configureField(playerField, row, cell);
-            setPlayerField(playerField);
-            if (isWinner(playerShips)) {
+        if (mode === 'play' && playFor === 'player' && AIField[row][cell] >= 0) {
+            let copyAIField = AIField.map(row => [...row]);
+
+            configureField(copyAIField, row, cell);
+            setAIField(copyAIField);
+            if (isWinner(AIShips, row, cell)) {
                 alert('Поздравляем! Вы победили!');
                 changeMode('prepare');
             } else {
-                const { rowAI, cellAI } = AI(AIGuessedField);
-                AIGuessedField[rowAI][cellAI] = configureField(AIField, rowAI, cellAI);
-                guess(AIGuessedField);
-                setAIField(AIField);
-                if (isWinner(AIShips)) {
+                let copyPlayerField = playerField.map(row => [...row]),
+                    copyGuessField = guessField.map(row => [...row]);
+                const { rowAI, cellAI } = AI(guessField);
+
+                copyGuessField[rowAI][cellAI] = configureField(copyPlayerField, rowAI, cellAI);
+                setGuess(copyGuessField);
+                setPlayerField(copyPlayerField);
+                if (isWinner(playerShips)) {
                     alert('Это поражение...Увы :(');
                     changeMode('prepare');
                 }
@@ -91,14 +84,14 @@ const Game = () => {
     return (
         <div id="game">
             <div id="fields">
-                <Field playFor={mode === 'prepare' ? 'player' : 'bot'}
-                       field={mode === 'prepare' ? playerField : AIField}
+                <Field playFor={mode === 'prepare' ? 'player' : 'AI'}
+                       field={playerField}
                        mode={mode}
                        handleClick={handleFieldClick}/>
                 {
                     mode === 'play' &&
                     <Field playFor={'player'}
-                           field={playerField}
+                           field={AIField}
                            mode={mode}
                            handleClick={handleFieldClick}/>
                 }
