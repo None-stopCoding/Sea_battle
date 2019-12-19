@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import _ from 'underscore';
 import './Game.css';
 import { Field } from './../Routing';
-import { initialField, AI, generateShip } from "../../utils/Routing";
+import { initialField, AI, generateShip, copy } from "../../utils/Routing";
 import {config} from "../../Config";
 
 /**
@@ -12,15 +12,15 @@ import {config} from "../../Config";
  */
 const Game = () => {
     const [mode, changeMode] = useState('prepare');
-    const [guessField, setGuess] = useState(initialField.map(row => [...row]));
-    const [AIField, setAIField] = useState(initialField.map(row => [...row]));
-    const [AIShips, setAIShips] = useState(JSON.parse(JSON.stringify(config.ships)));
-    const [playerField, setPlayerField] = useState(initialField.map(row => [...row]));
-    const [playerShips, setPlayerShips] = useState(JSON.parse(JSON.stringify(config.ships)));
+    const [guessField, setGuess] = useState(copy(initialField));
+    const [AIField, setAIField] = useState(copy(initialField));
+    const [AIShips, setAIShips] = useState(copy(config.ships));
+    const [playerField, setPlayerField] = useState(copy(initialField));
+    const [playerShips, setPlayerShips] = useState(copy(config.ships));
 
     const setShips = (newField) =>
         Object.fromEntries(
-            Object.entries(JSON.parse(JSON.stringify(config.ships)))
+            Object.entries(copy(config.ships))
                 .map(([ship, params]) => {
                     _.times(params.amount, () => {
                         const { coords, renderedField } = generateShip(newField, params.size);
@@ -38,23 +38,23 @@ const Game = () => {
         return field[row][cell];
     };
 
-    const damageShip = (ships, row, cell) => {
-        // Object.entries(ships).forEach(([ship, params]) => {
-        //     params['units'].forEach()
-        // })
-    };
+    // const damageShip = (ships, row, cell) => {
+    //     // Object.entries(ships).forEach(([ship, params]) => {
+    //     //     params['units'].forEach()
+    //     // })
+    // };
 
-    const isWinner = (ships) =>
-        !Object.entries(ships).filter(([ship, params]) =>
-            !!params['units'].filter(unit =>
-                !!unit.length
-            ).length
+    const isWinner = (field) =>
+        !field.filter(row =>
+            !!row.filter(cell =>
+                cell > 0 && cell !== config.safeValue).length
         ).length;
+
 
     useEffect(() => {
         if (mode === 'prepare') {
-            let newAIField = initialField.map(row => [...row]),
-                newPlayerField = initialField.map(row => [...row]);
+            let newAIField = copy(initialField),
+                newPlayerField = copy(initialField);
 
             setAIShips(setShips(newAIField));
             setAIField(newAIField);
@@ -63,6 +63,18 @@ const Game = () => {
             setPlayerField(newPlayerField);
         }
     }, [mode]);
+
+    useEffect(() => {
+        if (mode === 'play') {
+            if (isWinner(AIField)) {
+                alert('Поздравляем! Вы победили!');
+                changeMode('prepare');
+            } else if (isWinner(playerField)) {
+                alert('Это поражение...Увы :(');
+                changeMode('prepare');
+            }
+        }
+    }, [playerField, AIField]);
 
     function handleFieldClick(row, cell, playFor)
     {
@@ -73,13 +85,9 @@ const Game = () => {
             setAIField(copyAIField);
             if (copyAIField[row][cell] !== (-1) * config.safeValue) {
                 // damageShip(AIShips, row, cell);
-                if (isWinner(AIShips)) {
-                    alert('Поздравляем! Вы победили!');
-                    changeMode('prepare');
-                }
             } else {
-                let copyPlayerField = playerField.map(row => [...row]),
-                    copyGuessField = guessField.map(row => [...row]),
+                let copyPlayerField = copy(playerField),
+                    copyGuessField = copy(guessField),
                     value = 0,
                     victory = false;
 
@@ -87,15 +95,12 @@ const Game = () => {
                     const { rowAI, cellAI } = AI(copyGuessField);
                     copyGuessField[rowAI][cellAI] = value = configureField(copyPlayerField, rowAI, cellAI);
                     // damageShip(playerShips, rowAI, cellAI);
-                    victory = isWinner(playerShips, rowAI, cellAI);
+                    // TODO проверить работает ли выход из цикла при победе
+                    victory = isWinner(copyPlayerField);
                 } while (value !== (-1) * config.safeValue && !victory);
 
                 setGuess(copyGuessField);
                 setPlayerField(copyPlayerField);
-                if (victory) {
-                    alert('Это поражение...Увы :(');
-                    changeMode('prepare');
-                }
             }
         }
     }
