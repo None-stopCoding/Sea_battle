@@ -1,6 +1,6 @@
 body {font-family: Arial, Helvetica, sans-serif;}
 html{
-    background:url('https://www.tokkoro.com/picsup/5456350-world-warships-hd-wallpapers.jpg') no-repeat center center;
+    background:url('https://www.tokkoro.com/picsup/2929038-ship-old-ship-island-rocks-birds-storm-water-sea-rain-clouds-sailing___animal-wallpapers.jpg') no-repeat center center;
     min-height:100%;
     background-size:cover;
 }
@@ -17,7 +17,7 @@ input[type=text], input[type=password] {
     box-sizing: border-box;
 }
 /* Общие стили кнопок */
-button {
+.button1 {
     color: white;
     height: 100%;
     margin: 5px 0;
@@ -28,7 +28,7 @@ button {
     height: 10vh;
 }
 
-button:hover {
+.button1:hover {
     opacity: 1;
 }
 /* корбалик внутри формы */
@@ -121,14 +121,19 @@ span.psw {
 .ENT {
   text-decoration: none;
   outline: none;
-  display: inline-block;
-  position: relative;
+  text-align: center;
+  position: absolute;
+  margin-top: -5vh;
+  top: 50%;
   background: rgba(0, 0, 0, 0.2);
   width: 55vh;
   height: 10vh;
+  margin-left: -25vh;
+  left: 50%;
+  display: block;
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.4);
-  background: rgba(12, 11, 11, 0.4);
+  background: rgba(0, 0, 0, 0.4);
   font-size: 2.6vh;
   font-family: 'Montserrat', sans-serif;
   text-transform: uppercase;
@@ -139,7 +144,6 @@ span.psw {
   position: absolute;
   width: 0;
   height: 0;
-  opacity: 0;
   box-sizing: border-box;
 }
 .ENT:before {
@@ -161,7 +165,6 @@ span.psw {
 .ENT:hover:after{
   height: 100%;
   width: 100%;
-  opacity: 1;
 }
 .ENT:hover:before {transition: .2s ease height, .2s ease width .2s;}
 .ENT:hover:after {transition: .2s ease height .4s , .2s ease width .6s;}
