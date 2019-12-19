@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sea Battle</title>
+<link rel="icon" href="http://i.mycdn.me/i?r=AzEPZsRbOZEKgBhR0XGMT1RkDg9g3_xI_VLfzw4SzKZdlqaKTM5SRkZCeTgDn6uOyic">
+
+    <script url="script.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css" >
+
+</head>
+
+<body>
+
+<button onclick="document.getElementById('id01').style.display='block'" class="ENT">ENTER THE GAME "SEA BATTLE" </button>
+
+<div id="id01" class="modal">
+  
+  <form class="modal-content animate" action="/action_page.php">
+    <div class="imgcontainer">
+      <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">×</span>
+      <img src="https://thumbs.gfycat.com/FrankFreeAmericankestrel-size_restricted.gif" alt="Avatar" class="avatar">
+    </div>
+
+    <div class="container">
+      <label for="uname" style="font-size: 2vh;"><b>Your Username</b></label><br><br>
+      <input class='form-row' type="text" placeholder="Enter Username" name="uname" autocomplete="off" required><br><br>
+
+      <label for="psw" style="font-size: 2vh;"><b>Your Password</b></label><br><br>
+      <input type="password" placeholder="Enter Password" name="psw" required><br><br>
+      <button type="submit" class="button1">Enter the game</button>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>
