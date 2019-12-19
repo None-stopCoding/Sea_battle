@@ -1,4 +1,5 @@
-import {config} from "../Config";
+import { config } from "../Config";
+import { generateSafeArea } from "./Routing";
 import _ from "underscore";
 
 /**
@@ -66,33 +67,6 @@ const locateShip = (head, field, size) => {
         } while(coords.length === 1 && directions.length);
     }
     return coords;
-};
-
-/**
- * Грубо говоря пробегаемся по каждой клетке корабля и смотрим
- *  во все 8 условий (4 угла 4 стороны)
- * @param field
- * @param coords
- */
-const generateSafeArea = (field, coords) => {
-    const safe = config.safeValue,
-        size = config.fieldSize,
-        sides = [-1, 0, 1];
-
-    coords.forEach(point => {
-        sides.forEach(rowOffset => {
-            const row = point.y + rowOffset;
-            sides.forEach(cellOffset => {
-                const cell = point.x + cellOffset;
-                if (0 <= row && row < size &&
-                    0 <= cell && cell < size &&
-                    !field[row][cell]) {
-
-                    field[row][cell] = safe;
-                }
-            });
-        });
-    });
 };
 
 /**

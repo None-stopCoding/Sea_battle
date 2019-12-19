@@ -18,24 +18,29 @@ const Field = ({ field, mode, playFor, handleClick }) => {
         let className = 'cell',
             idName = 'empty';
 
-        if (value === (-1) * config.safeValue) {
+        if (parseInt(value) === (-1) * config.safeValue) {
             idName = 'missed';
         }
-        else if (value < 0) {
+        else if (parseInt(value) < 0) {
             idName = 'killed';
         }
 
-        if ((mode === 'play' && playFor === 'AI') ||
-            (mode === 'prepare' && playFor === 'player')) {
-
-            if (!value || Math.abs(value) === config.safeValue) {
-                className += ' empty';
-            }
+        if (typeof value === 'string') {
+            className += ' safe';
         } else {
-            if (idName !== 'killed') {
-                className += ' empty';
+            if ((mode === 'play' && playFor === 'AI') ||
+                (mode === 'prepare' && playFor === 'player')) {
+
+                if (!value || Math.abs(value) === config.safeValue) {
+                    className += ' empty';
+                }
+            } else {
+                if (idName !== 'killed') {
+                    className += ' empty';
+                }
             }
         }
+
         return {
             idName: idName,
             className: className
