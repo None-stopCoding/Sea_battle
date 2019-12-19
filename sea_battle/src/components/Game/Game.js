@@ -2,8 +2,55 @@ import React, {useEffect, useState} from 'react';
 import _ from 'underscore';
 import './Game.css';
 import { Field } from './../Routing';
-import { initialField, AI, generateShip, copy } from "../../utils/Routing";
+import {initialField, AI, generateShip, copy, generateSafeArea} from "../../utils/Routing";
 import {config} from "../../Config";
+
+const setShips = (newField) =>
+    Object.fromEntries(
+        Object.entries(copy(config.ships))
+            .map(([ship, params]) => {
+                _.times(params.amount, () => {
+                    const { coords, renderedField } = generateShip(newField, params.size);
+
+                    params.units.push(coords);
+                    newField = renderedField;
+                });
+
+                params.destroyed = (new Array(params.amount)).fill(0);
+                return [ship, params];
+            })
+    );
+
+const configureField = (field, row, cell) => {
+    const val = (-1) * (!field[row][cell] ? config.safeValue : field[row][cell]);
+    field[row][cell] = typeof field[row][cell] === 'string' ? String(val) : val;
+    return field[row][cell];
+};
+
+const isWinner = (field) =>
+    !field.filter(row =>
+        !!row.filter(cell =>
+            parseInt(cell) > 0 && parseInt(cell) !== config.safeValue).length
+    ).length;
+
+const checkShipDestroyed = (ships, row, cell) => {
+    let destroyedShip = null;
+    Object.entries(ships).forEach(([ship, params]) => {
+        const index = params.units.findIndex(unit =>
+            !!unit.filter(point =>
+                point.y === row && point.x === cell).length
+        );
+
+        if (index !== -1) {
+            if (++params.destroyed[index] === params.size) {
+                destroyedShip = params.units[index];
+                // TODO проверить для бота
+                // console.log(ship);
+            }
+        }
+    });
+    return destroyedShip;
+};
 
 /**
  * TODO подумать над оптимизацией
@@ -17,39 +64,7 @@ const Game = () => {
     const [AIShips, setAIShips] = useState(copy(config.ships));
     const [playerField, setPlayerField] = useState(copy(initialField));
     const [playerShips, setPlayerShips] = useState(copy(config.ships));
-
-    const setShips = (newField) =>
-        Object.fromEntries(
-            Object.entries(copy(config.ships))
-                .map(([ship, params]) => {
-                    _.times(params.amount, () => {
-                        const { coords, renderedField } = generateShip(newField, params.size);
-
-                        params['units'].push(coords);
-                        newField = renderedField;
-                    });
-
-                    return [ship, params];
-                })
-        );
-
-    const configureField = (field, row, cell) => {
-        field[row][cell] = (-1) * (!field[row][cell] ? config.safeValue : field[row][cell]);
-        return field[row][cell];
-    };
-
-    // const damageShip = (ships, row, cell) => {
-    //     // Object.entries(ships).forEach(([ship, params]) => {
-    //     //     params['units'].forEach()
-    //     // })
-    // };
-
-    const isWinner = (field) =>
-        !field.filter(row =>
-            !!row.filter(cell =>
-                cell > 0 && cell !== config.safeValue).length
-        ).length;
-
+    const [showResult, end] = useState(false);
 
     useEffect(() => {
         if (mode === 'prepare') {
@@ -64,6 +79,7 @@ const Game = () => {
         }
     }, [mode]);
 
+    // TODO сделать компонент модального окна
     useEffect(() => {
         if (mode === 'play') {
             if (isWinner(AIField)) {
@@ -79,25 +95,33 @@ const Game = () => {
     function handleFieldClick(row, cell, playFor)
     {
         if (mode === 'play' && playFor === 'player' && AIField[row][cell] >= 0) {
-            let copyAIField = AIField.map(row => [...row]);
+            let copyAIField = copy(AIField);
 
             configureField(copyAIField, row, cell);
-            setAIField(copyAIField);
-            if (copyAIField[row][cell] !== (-1) * config.safeValue) {
-                // damageShip(AIShips, row, cell);
+            if (parseInt(copyAIField[row][cell]) !== (-1) * config.safeValue) {
+                const ship = checkShipDestroyed(AIShips, row, cell);
+                if (ship) {
+                    generateSafeArea(copyAIField, ship, true);
+                }
+                setAIField(copyAIField);
             } else {
                 let copyPlayerField = copy(playerField),
                     copyGuessField = copy(guessField),
                     value = 0,
                     victory = false;
 
+                setAIField(copyAIField);
+
                 do {
                     const { rowAI, cellAI } = AI(copyGuessField);
                     copyGuessField[rowAI][cellAI] = value = configureField(copyPlayerField, rowAI, cellAI);
-                    // damageShip(playerShips, rowAI, cellAI);
+                    const ship = checkShipDestroyed(playerShips, rowAI, cellAI);
+                    if (ship) {
+                        generateSafeArea(copyPlayerField, ship, true);
+                    }
                     // TODO проверить работает ли выход из цикла при победе
                     victory = isWinner(copyPlayerField);
-                } while (value !== (-1) * config.safeValue && !victory);
+                } while (parseInt(value) !== (-1) * config.safeValue && !victory);
 
                 setGuess(copyGuessField);
                 setPlayerField(copyPlayerField);
