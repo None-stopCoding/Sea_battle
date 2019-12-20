@@ -2,7 +2,8 @@ import React, {useEffect, useState} from 'react';
 import _ from 'underscore';
 import './Game.css';
 import { Field } from './../Routing';
-import {initialField, AI, generateShip, copy, generateSafeArea} from "../../utils/Routing";
+import { initialField, AI, generateShip,
+         copy, generateSafeArea, configureField } from "../../utils/Routing";
 import {config} from "../../Config";
 
 const setShips = (newField) =>
@@ -21,16 +22,10 @@ const setShips = (newField) =>
             })
     );
 
-const configureField = (field, row, cell) => {
-    const val = (-1) * (!field[row][cell] ? config.safeValue : field[row][cell]);
-    field[row][cell] = typeof field[row][cell] === 'string' ? String(val) : val;
-    return field[row][cell];
-};
-
 const isWinner = (field) =>
     !field.filter(row =>
         !!row.filter(cell =>
-            parseInt(cell) > 0 && parseInt(cell) !== config.safeValue).length
+            +cell > 0 && +cell !== config.safeValue).length
     ).length;
 
 const checkShipDestroyed = (ships, row, cell) => {
@@ -66,6 +61,8 @@ const Game = () => {
     const [playerShips, setPlayerShips] = useState(copy(config.ships));
     const [showResult, end] = useState(false);
 
+    // useEffect(() => {console.log(playerField)}, [playerField]);
+
     useEffect(() => {
         if (mode === 'prepare') {
             let newAIField = copy(initialField),
@@ -98,7 +95,7 @@ const Game = () => {
             let copyAIField = copy(AIField);
 
             configureField(copyAIField, row, cell);
-            if (parseInt(copyAIField[row][cell]) !== (-1) * config.safeValue) {
+            if (+copyAIField[row][cell] !== (-1) * config.safeValue) {
                 const ship = checkShipDestroyed(AIShips, row, cell);
                 if (ship) {
                     generateSafeArea(copyAIField, ship, true);
@@ -108,20 +105,23 @@ const Game = () => {
                 let copyPlayerField = copy(playerField),
                     copyGuessField = copy(guessField),
                     value = 0,
-                    victory = false;
+                    victory = false,
+                    helper = {};
 
                 setAIField(copyAIField);
 
                 do {
-                    const { rowAI, cellAI } = AI(copyGuessField);
+                    const { rowAI, cellAI, ...rest } = AI(copyGuessField, helper);
+                    helper = rest;
                     copyGuessField[rowAI][cellAI] = value = configureField(copyPlayerField, rowAI, cellAI);
                     const ship = checkShipDestroyed(playerShips, rowAI, cellAI);
                     if (ship) {
                         generateSafeArea(copyPlayerField, ship, true);
+                        generateSafeArea(copyGuessField, ship, true);
                     }
                     // TODO проверить работает ли выход из цикла при победе
                     victory = isWinner(copyPlayerField);
-                } while (parseInt(value) !== (-1) * config.safeValue && !victory);
+                } while (+value !== (-1) * config.safeValue && !victory);
 
                 setGuess(copyGuessField);
                 setPlayerField(copyPlayerField);

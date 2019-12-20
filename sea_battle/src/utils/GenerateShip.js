@@ -1,17 +1,6 @@
 import { config } from "../Config";
-import { generateSafeArea } from "./Routing";
+import { generateSafeArea, createListOfEmptyCells, Point } from "./Routing";
 import _ from "underscore";
-
-/**
- * Конкструктор объекта точки с координатами
- * @param row
- * @param cell
- * @constructor
- */
-function Point(row, cell) {
-    this.x = cell;
-    this.y = row;
-}
 
 /**
  * По созданным конфигам (directions) для каждого направления
@@ -68,18 +57,6 @@ const locateShip = (head, field, size) => {
     }
     return coords;
 };
-
-/**
- * Отдает список разрешшенных клеток (с координатами) для строительства корабля
- * @param field
- * @returns {[]}
- */
-const createListOfEmptyCells = (field) =>
-    field.flat().map((cell, index) => {
-        if (!cell) {
-            return new Point(Math.floor(index / config.fieldSize), index % config.fieldSize);
-        }
-    }).filter(cell => cell instanceof Point);
 
 /**
  * Генерируем корабль
