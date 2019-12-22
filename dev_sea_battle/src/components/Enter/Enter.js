@@ -21,15 +21,8 @@ const EnterPage = ({ logIn }) => {
             headers:{ ...config.defaultHeaders },
             body: JSON.stringify({name: userName})
         }).then(res => {
-            if(res.status===200) {
-                console.log('entered!', res);
-                const token = (new Cookies()).get('sid');
-                console.log(token);
-                if (!token) {
-                    throw new Error("Что то пошло не так, сервер вас не пускает :(");
-                } else {
-                    logIn(userName, token);
-                }
+            if (res.status === 200) {
+                logIn(userName);
             }
             throw new Error(res.statusText);
         }).catch(e => alert(e.message));

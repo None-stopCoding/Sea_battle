@@ -30,9 +30,13 @@ const Main = () => {
         }
     }, []);
 
-    const logIn = (name, token) => {
+    const logIn = (name) => {
         enter(name);
-        setToken(token);
+        const token = cookies.get('sid');
+        console.log(token);
+        if (token) {
+            setToken(token);
+        }
     };
 
     return(
