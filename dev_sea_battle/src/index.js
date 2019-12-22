@@ -33,14 +33,14 @@ const Main = () => {
     const logIn = (name) => {
         enter(name);
         const token = cookies.get('sid');
-        console.log(token);
+        console.log(cookies);
         if (token) {
             setToken(token);
         }
     };
 
     return(
-        !!authToken ? <App userName={userName}/> : <EnterPage logIn={logIn}/>
+        authToken || userName ? <App userName={userName}/> : <EnterPage logIn={logIn}/>
     );
 };
 
