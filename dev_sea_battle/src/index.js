@@ -10,7 +10,7 @@ const Main = () => {
     const [authToken, setToken] = useState(Cookies.get('sid'));
 
     useEffect(() => {
-        console.log(authToken);
+        // console.log(authToken);
         if (authToken) {
             fetch('/api/users', {
                 headers: {
@@ -32,8 +32,7 @@ const Main = () => {
     const logIn = (name) => {
         enter(name);
         const token = Cookies.get('sid');
-        console.log(document.cookie);
-        console.log(token);
+        console.log("document.cookie ", document.cookie);
         if (token) {
             setToken(token);
         }
