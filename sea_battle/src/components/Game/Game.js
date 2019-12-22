@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import _ from 'underscore';
 import './Game.css';
-import { Field } from './../Routing';
+import { Field, Timer } from './../Routing';
 import { initialField, AI, generateShip,
          copy, generateSafeArea, configureField } from "../../utils/Routing";
 import {config} from "../../Config";
@@ -66,6 +66,8 @@ const Game = () => {
         status: false,
         person: ''
     });
+    const [play, timer] = useState(true);
+    const [stopTime, changeStopTime] = useState(0);
 
     useEffect(() => {
         if (mode === 'prepare') {
@@ -92,6 +94,7 @@ const Game = () => {
             }
 
             changeMode('prepare');
+            timer(false);
             setVictory({
                 status: false,
                 person: ''
@@ -101,7 +104,7 @@ const Game = () => {
     
     function handleFieldClick(row, cell, playFor)
     {
-        if (mode === 'play' && playFor === 'player' && AIField[row][cell] >= 0 && !AIIsThinking) {
+        if (mode === 'play' && playFor === 'player' && AIField[row][cell] >= 0 && !AIIsThinking && play) {
             let copyAIField = copy(AIField);
 
             configureField(copyAIField, row, cell);
@@ -181,8 +184,32 @@ const Game = () => {
         return false;
     };
 
+    // const onTimerStop = () => {
+    //     if (mode === 'prepare') {
+    //         changeMode('play');
+    //     } else {
+    //         handleFieldClick(0, 0, 'player');
+    //     }
+    // };
+
+    const handlePlayRestart = () => {
+        if (mode === 'prepare') {
+            changeMode('play');
+            timer(true);
+        } else {
+            timer(false);
+            changeMode('prepare');
+        }
+    };
+
+    const handleStopTimer = (value) => changeStopTime(value);
+
     return (
         <div id="game">
+            {
+                mode === 'play' &&
+                <Timer action={play} changeStopTime={handleStopTimer}/>
+            }
             <div id="fields">
                 <Field playFor={mode === 'prepare' ? 'player' : 'AI'}
                        field={playerField}
@@ -196,9 +223,15 @@ const Game = () => {
                            handleClick={handleFieldClick}/>
                 }
             </div>
-            <button id="play_button" onClick={() => changeMode(mode => mode === 'prepare' ? 'play' : 'prepare')}>
-                {mode === 'prepare' ? 'Play!' : 'Restart!'}
+            <button id="play_button" onClick={() => handlePlayRestart()}>
+                {mode === 'prepare' ? 'Начать играть!' : 'Заново!'}
             </button>
+            {
+                mode === 'play' &&
+                <button onClick={() => timer(play => !play)}>
+                    {play ? 'Остановить' : 'Продолжить'}
+                </button>
+            }
         </div>
     );
 };

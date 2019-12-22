@@ -27,5 +27,6 @@ export const config = {
         }
     },
     safeValue: 5,
-    timeAIIsWaiting: 500
+    timeAIIsWaiting: 500,
+    timerStart: 30
 };
