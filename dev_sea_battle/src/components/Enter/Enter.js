@@ -19,7 +19,7 @@ const EnterPage = ({ logIn }) => {
             headers:{
                 'Content-Type':'application/json; charset=utf-8'
             },
-            body: JSON.stringify(userName)
+            body: 'json=' + JSON.stringify(userName)
         }).then(res => {
             if(res.status===200) {
                 console.log('entered!', res);
