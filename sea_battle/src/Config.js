@@ -26,5 +26,6 @@ export const config = {
             destroyed: []
         }
     },
-    safeValue: 5
+    safeValue: 5,
+    timeAIIsWaiting: 500
 };

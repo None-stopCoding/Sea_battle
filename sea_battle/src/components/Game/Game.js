@@ -61,6 +61,7 @@ const Game = () => {
     const [playerShips, setPlayerShips] = useState(copy(config.ships));
     // const [showResult, end] = useState(false);
     const [AIMemory, memorize] = useState({});
+    const [AIIsThinking, think] = useState(false);
 
     useEffect(() => {
         if (mode === 'prepare') {
@@ -78,22 +79,9 @@ const Game = () => {
         }
     }, [mode]);
 
-    // TODO сделать компонент модального окна
-    useEffect(() => {
-        if (mode === 'play') {
-            if (isWinner(AIField)) {
-                alert('Поздравляем! Вы победили!');
-                changeMode('prepare');
-            } else if (isWinner(playerField)) {
-                alert('Это поражение...Увы :(');
-                changeMode('prepare');
-            }
-        }
-    }, [playerField, AIField]);
-
     function handleFieldClick(row, cell, playFor)
     {
-        if (mode === 'play' && playFor === 'player' && AIField[row][cell] >= 0) {
+        if (mode === 'play' && playFor === 'player' && AIField[row][cell] >= 0 && !AIIsThinking) {
             let copyAIField = copy(AIField);
 
             configureField(copyAIField, row, cell);
@@ -109,30 +97,66 @@ const Game = () => {
                 let copyGuessField = copy(guessField);
                 let copyMemo = AIMemory;
                 let value = 0,
-                    destroyed = false,
+                    destroyedShip = false,
                     victory = false;
 
-                do {
-                    const { rowAI, cellAI, ...rest } = AI(copy(copyGuessField), destroyed, copyMemo);
-                    copyMemo = rest;
-                    copyGuessField[rowAI][cellAI] = value = configureField(copyPlayerField, rowAI, cellAI);
-                    console.log(copyGuessField, copyPlayerField);
-                    const ship = checkShipDestroyed(playerShips, rowAI, cellAI);
-                    if (ship) {
-                        destroyed = true;
-                        generateSafeArea(copyPlayerField, ship, true);
-                        generateSafeArea(copyGuessField, ship, true);
-                    }
-                    // TODO проверить работает ли выход из цикла при победе
-                    victory = isWinner(copyPlayerField);
-                } while (+value !== (-1) * config.safeValue && !victory);
+                const rerender = () => {
+                    setGuess(copyGuessField);
+                    setPlayerField(copyPlayerField);
+                    memorize(copyMemo);
+                };
 
-                setGuess(copyGuessField);
-                setPlayerField(copyPlayerField);
-                memorize(copyMemo);
+                const createThought = () =>
+                    new Promise((resolve, reject) => {
+                        if (+value !== (-1) * config.safeValue && !victory) {
+                            rerender();
+                            think(true);
+                            setTimeout(() => {
+                                think(false);
+                                resolve(AI(copy(copyGuessField), destroyedShip, copyMemo));
+                            }, config.timeAIIsWaiting);
+                        } else {
+                            reject('finished');
+                        }
+                    });
+
+                const makeAIMove = promise => {
+                    promise.then(result => {
+                        const { rowAI, cellAI, ...rest } = result;
+                        copyMemo = rest;
+                        copyGuessField[rowAI][cellAI] = value = configureField(copyPlayerField, rowAI, cellAI);
+                        const ship = checkShipDestroyed(playerShips, rowAI, cellAI);
+                        if (ship) {
+                            destroyedShip = true;
+                            generateSafeArea(copyPlayerField, ship, true);
+                            generateSafeArea(copyGuessField, ship, true);
+                        }
+                        // TODO проверить работает ли выход из цикла при победе
+                        victory = isWinner(copyPlayerField);
+                        makeAIMove(createThought());
+                    }, finished => {
+                        rerender();
+                    });
+                };
+
+                makeAIMove(createThought());
             }
         }
     }
+
+    // TODO сделать компонент модального окна
+    useEffect(() => {
+        if (mode === 'play') {
+            console.log(AIField, playerField);
+            if (isWinner(AIField)) {
+                alert('Поздравляем! Вы победили!');
+                changeMode('prepare');
+            } else if (isWinner(playerField)) {
+                alert('Это поражение...Увы :(');
+                changeMode('prepare');
+            }
+        }
+    }, [playerField, AIField]);
 
     return (
         <div id="game">
