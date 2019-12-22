@@ -6,7 +6,6 @@
 
 #fields {
     display: flex;
-    /*flex-direction: row;*/
     justify-content: center;
     flex-wrap: wrap;
 }
@@ -17,10 +16,3 @@
     display: flex;
     justify-content: space-around;
 }
-
-/*.game_button {*/
-/*    width: 30px;*/
-/*    height: 30px;*/
-/*    border: 2px solid #000;*/
-/*    border-radius: 30px;*/
-/*}*/
