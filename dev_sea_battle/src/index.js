@@ -10,6 +10,7 @@ const Main = () => {
     const [authToken, setToken] = useState(Cookies.get('sid'));
 
     useEffect(() => {
+        console.log(authToken);
         if (authToken) {
             fetch('/api/users', {
                 headers: {

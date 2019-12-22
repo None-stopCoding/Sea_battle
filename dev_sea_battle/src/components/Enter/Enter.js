@@ -23,9 +23,11 @@ const EnterPage = ({ logIn }) => {
         }).then(res => {
             if (res.status === 200) {
                 logIn(userName);
+            } else if (res.status === 400) {
+                throw new Error("Польователь с таким именем уже существует")
             }
             throw new Error(res.statusText);
-        }).catch(e => alert(e.message));
+        }).catch(e => alert(e));
     };
 
     return(
