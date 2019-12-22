@@ -223,15 +223,16 @@ const Game = () => {
                            handleClick={handleFieldClick}/>
                 }
             </div>
-            <button id="play_button" onClick={() => handlePlayRestart()}>
-                {mode === 'prepare' ? 'Начать играть!' : 'Заново!'}
-            </button>
-            {
-                mode === 'play' &&
-                <button onClick={() => timer(play => !play)}>
-                    {play ? 'Остановить' : 'Продолжить'}
-                </button>
-            }
+            <div className="button_group">
+                <img src={`./img/${mode === 'prepare' ? 'power-button' : 'refresh'}.png`} alt="control"
+                     onClick={() => handlePlayRestart()}/>
+
+                {
+                    mode === 'play' &&
+                    <img src={`./img/${play ? "pause" : "play"}.png`} alt="timer"
+                         onClick={() => timer(play => !play)}/>
+                }
+            </div>
         </div>
     );
 };
