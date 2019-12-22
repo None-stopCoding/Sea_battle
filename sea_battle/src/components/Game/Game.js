@@ -59,9 +59,8 @@ const Game = () => {
     const [AIShips, setAIShips] = useState(copy(config.ships));
     const [playerField, setPlayerField] = useState(copy(initialField));
     const [playerShips, setPlayerShips] = useState(copy(config.ships));
-    const [showResult, end] = useState(false);
-
-    // useEffect(() => {console.log(playerField)}, [playerField]);
+    // const [showResult, end] = useState(false);
+    const [AIMemory, memorize] = useState({});
 
     useEffect(() => {
         if (mode === 'prepare') {
@@ -73,6 +72,9 @@ const Game = () => {
 
             setPlayerShips(setShips(newPlayerField));
             setPlayerField(newPlayerField);
+
+            setGuess(copy(initialField));
+            memorize({});
         }
     }, [mode]);
 
@@ -102,20 +104,22 @@ const Game = () => {
                 }
                 setAIField(copyAIField);
             } else {
-                let copyPlayerField = copy(playerField),
-                    copyGuessField = copy(guessField),
-                    value = 0,
-                    victory = false,
-                    helper = {};
-
                 setAIField(copyAIField);
+                let copyPlayerField = copy(playerField);
+                let copyGuessField = copy(guessField);
+                let copyMemo = AIMemory;
+                let value = 0,
+                    destroyed = false,
+                    victory = false;
 
                 do {
-                    const { rowAI, cellAI, ...rest } = AI(copyGuessField, helper);
-                    helper = rest;
+                    const { rowAI, cellAI, ...rest } = AI(copy(copyGuessField), destroyed, copyMemo);
+                    copyMemo = rest;
                     copyGuessField[rowAI][cellAI] = value = configureField(copyPlayerField, rowAI, cellAI);
+                    console.log(copyGuessField, copyPlayerField);
                     const ship = checkShipDestroyed(playerShips, rowAI, cellAI);
                     if (ship) {
+                        destroyed = true;
                         generateSafeArea(copyPlayerField, ship, true);
                         generateSafeArea(copyGuessField, ship, true);
                     }
@@ -125,6 +129,7 @@ const Game = () => {
 
                 setGuess(copyGuessField);
                 setPlayerField(copyPlayerField);
+                memorize(copyMemo);
             }
         }
     }
