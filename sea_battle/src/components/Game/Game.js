@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import _ from 'underscore';
 import './Game.css';
-import { Field } from './../Routing';
-import {initialField, AI, generateShip, copy, generateSafeArea} from "../../utils/Routing";
+import { Field, Timer } from './../Routing';
+import { initialField, AI, generateShip,
+         copy, generateSafeArea, configureField } from "../../utils/Routing";
 import {config} from "../../Config";
 
 const setShips = (newField) =>
@@ -21,16 +22,10 @@ const setShips = (newField) =>
             })
     );
 
-const configureField = (field, row, cell) => {
-    const val = (-1) * (!field[row][cell] ? config.safeValue : field[row][cell]);
-    field[row][cell] = typeof field[row][cell] === 'string' ? String(val) : val;
-    return field[row][cell];
-};
-
 const isWinner = (field) =>
     !field.filter(row =>
         !!row.filter(cell =>
-            parseInt(cell) > 0 && parseInt(cell) !== config.safeValue).length
+            +cell > 0 && +cell !== config.safeValue).length
     ).length;
 
 const checkShipDestroyed = (ships, row, cell) => {
@@ -64,7 +59,15 @@ const Game = () => {
     const [AIShips, setAIShips] = useState(copy(config.ships));
     const [playerField, setPlayerField] = useState(copy(initialField));
     const [playerShips, setPlayerShips] = useState(copy(config.ships));
-    const [showResult, end] = useState(false);
+    // const [showResult, end] = useState(false);
+    const [AIMemory, memorize] = useState({});
+    const [AIIsThinking, think] = useState(false);
+    const [hasWon, setVictory] = useState({
+        status: false,
+        person: ''
+    });
+    const [play, timer] = useState(true);
+    const [stopTime, changeStopTime] = useState(0);
 
     useEffect(() => {
         if (mode === 'prepare') {
@@ -76,61 +79,137 @@ const Game = () => {
 
             setPlayerShips(setShips(newPlayerField));
             setPlayerField(newPlayerField);
+
+            setGuess(copy(initialField));
+            memorize({});
         }
     }, [mode]);
 
-    // TODO сделать компонент модального окна
     useEffect(() => {
-        if (mode === 'play') {
-            if (isWinner(AIField)) {
+        if (hasWon.status) {
+            if (hasWon.person === 'person') {
                 alert('Поздравляем! Вы победили!');
-                changeMode('prepare');
-            } else if (isWinner(playerField)) {
+            } else {
                 alert('Это поражение...Увы :(');
-                changeMode('prepare');
             }
-        }
-    }, [playerField, AIField]);
 
+            changeMode('prepare');
+            timer(false);
+            setVictory({
+                status: false,
+                person: ''
+            })
+        }
+    }, [hasWon]);
+    
     function handleFieldClick(row, cell, playFor)
     {
-        if (mode === 'play' && playFor === 'player' && AIField[row][cell] >= 0) {
+        if (mode === 'play' && playFor === 'player' && AIField[row][cell] >= 0 && !AIIsThinking && play) {
             let copyAIField = copy(AIField);
 
             configureField(copyAIField, row, cell);
-            if (parseInt(copyAIField[row][cell]) !== (-1) * config.safeValue) {
+            if (+copyAIField[row][cell] !== (-1) * config.safeValue) {
                 const ship = checkShipDestroyed(AIShips, row, cell);
                 if (ship) {
                     generateSafeArea(copyAIField, ship, true);
+                    checkVictory('person', copyAIField);
                 }
                 setAIField(copyAIField);
             } else {
-                let copyPlayerField = copy(playerField),
-                    copyGuessField = copy(guessField),
-                    value = 0,
+                setAIField(copyAIField);
+                let copyPlayerField = copy(playerField);
+                let copyGuessField = copy(guessField);
+                let copyMemo = AIMemory;
+                let value = 0,
+                    destroyedShip = false,
                     victory = false;
 
-                setAIField(copyAIField);
+                const rerender = () => {
+                    setGuess(copyGuessField);
+                    setPlayerField(copyPlayerField);
+                    memorize(copyMemo);
+                };
 
-                do {
-                    const { rowAI, cellAI } = AI(copyGuessField);
-                    copyGuessField[rowAI][cellAI] = value = configureField(copyPlayerField, rowAI, cellAI);
-                    const ship = checkShipDestroyed(playerShips, rowAI, cellAI);
-                    if (ship) {
-                        generateSafeArea(copyPlayerField, ship, true);
-                    }
-                    // TODO проверить работает ли выход из цикла при победе
-                    victory = isWinner(copyPlayerField);
-                } while (parseInt(value) !== (-1) * config.safeValue && !victory);
+                const createThought = (needRerender = false) =>
+                    new Promise((resolve, reject) => {
+                        if (+value !== (-1) * config.safeValue && !victory) {
+                            if (needRerender) rerender();
+                            think(true);
+                            setTimeout(() => {
+                                think(false);
+                                resolve(AI(copy(copyGuessField), destroyedShip, copyMemo));
+                            }, config.timeAIIsWaiting);
+                        } else {
+                            reject('finished');
+                        }
+                    });
 
-                setGuess(copyGuessField);
-                setPlayerField(copyPlayerField);
+                const makeAIMove = promise => {
+                    promise.then(result => {
+                        const { rowAI, cellAI, ...rest } = result;
+                        destroyedShip = false;
+                        copyMemo = rest;
+                        copyGuessField[rowAI][cellAI] = value = configureField(copyPlayerField, rowAI, cellAI);
+                        const ship = checkShipDestroyed(playerShips, rowAI, cellAI);
+                        if (ship) {
+                            destroyedShip = true;
+                            generateSafeArea(copyPlayerField, ship, true);
+                            generateSafeArea(copyGuessField, ship, true);
+                            victory = checkVictory('AI', copyPlayerField);
+                        }
+                        // victory = isWinner(copyPlayerField);
+                        makeAIMove(createThought(true));
+                    }, finished => {
+                        rerender();
+                    });
+                };
+
+                makeAIMove(createThought());
             }
         }
     }
 
+    const checkVictory = (person, field) => {
+        if (isWinner(field)) {
+            let competitor = 'person';
+            if (person === 'AI') {
+                competitor = 'AI';
+            }
+            setVictory({
+                status: true,
+                person: competitor
+            });
+            return true;
+        }
+        return false;
+    };
+
+    // const onTimerStop = () => {
+    //     if (mode === 'prepare') {
+    //         changeMode('play');
+    //     } else {
+    //         handleFieldClick(0, 0, 'player');
+    //     }
+    // };
+
+    const handlePlayRestart = () => {
+        if (mode === 'prepare') {
+            changeMode('play');
+            timer(true);
+        } else {
+            timer(false);
+            changeMode('prepare');
+        }
+    };
+
+    const handleStopTimer = (value) => changeStopTime(value);
+
     return (
         <div id="game">
+            {
+                mode === 'play' &&
+                <Timer action={play} changeStopTime={handleStopTimer}/>
+            }
             <div id="fields">
                 <Field playFor={mode === 'prepare' ? 'player' : 'AI'}
                        field={playerField}
@@ -144,9 +223,15 @@ const Game = () => {
                            handleClick={handleFieldClick}/>
                 }
             </div>
-            <button id="play_button" onClick={() => changeMode(mode => mode === 'prepare' ? 'play' : 'prepare')}>
-                {mode === 'prepare' ? 'Play!' : 'Restart!'}
+            <button id="play_button" onClick={() => handlePlayRestart()}>
+                {mode === 'prepare' ? 'Начать играть!' : 'Заново!'}
             </button>
+            {
+                mode === 'play' &&
+                <button onClick={() => timer(play => !play)}>
+                    {play ? 'Остановить' : 'Продолжить'}
+                </button>
+            }
         </div>
     );
 };

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { Cell } from './../Routing';
+import React from 'react';
 import './Field.css';
 import {config} from "../../Config";
 
