@@ -106,10 +106,10 @@ const Game = () => {
                     memorize(copyMemo);
                 };
 
-                const createThought = () =>
+                const createThought = (needRerender = false) =>
                     new Promise((resolve, reject) => {
                         if (+value !== (-1) * config.safeValue && !victory) {
-                            rerender();
+                            if (needRerender) rerender();
                             think(true);
                             setTimeout(() => {
                                 think(false);
@@ -123,6 +123,7 @@ const Game = () => {
                 const makeAIMove = promise => {
                     promise.then(result => {
                         const { rowAI, cellAI, ...rest } = result;
+                        destroyedShip = false;
                         copyMemo = rest;
                         copyGuessField[rowAI][cellAI] = value = configureField(copyPlayerField, rowAI, cellAI);
                         const ship = checkShipDestroyed(playerShips, rowAI, cellAI);
@@ -133,7 +134,7 @@ const Game = () => {
                         }
                         // TODO проверить работает ли выход из цикла при победе
                         victory = isWinner(copyPlayerField);
-                        makeAIMove(createThought());
+                        makeAIMove(createThought(true));
                     }, finished => {
                         rerender();
                     });
