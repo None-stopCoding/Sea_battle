@@ -83,6 +83,22 @@ const Game = () => {
         }
     }, [mode]);
 
+    useEffect(() => {
+        if (hasWon.status) {
+            if (hasWon.person === 'person') {
+                alert('Поздравляем! Вы победили!');
+            } else {
+                alert('Это поражение...Увы :(');
+            }
+
+            changeMode('prepare');
+            setVictory({
+                status: false,
+                person: ''
+            })
+        }
+    }, [hasWon]);
+    
     function handleFieldClick(row, cell, playFor)
     {
         if (mode === 'play' && playFor === 'player' && AIField[row][cell] >= 0 && !AIIsThinking) {
@@ -164,21 +180,6 @@ const Game = () => {
         }
         return false;
     };
-    useEffect(() => {
-        if (hasWon.status) {
-            if (hasWon.person === 'person') {
-                alert('Поздравляем! Вы победили!');
-            } else {
-                alert('Это поражение...Увы :(');
-            }
-
-            changeMode('prepare');
-            setVictory({
-                status: false,
-                person: ''
-            })
-        }
-    }, [hasWon]);
 
     return (
         <div id="game">
