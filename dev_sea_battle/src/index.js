@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import Cookies from 'universal-cookie';
+import Cookies from 'js-cookie';
 import { render } from 'react-dom';
 import './index.css';
 import { App, EnterPage } from './components/Routing';
 import {config} from "./Config";
 
-const cookies = new Cookies();
-
 const Main = () => {
     const [userName, enter] = useState('');
-    const [authToken, setToken] = useState(cookies.get('sid'));
+    const [authToken, setToken] = useState(Cookies.get('sid'));
 
     useEffect(() => {
         if (authToken) {
@@ -32,8 +30,9 @@ const Main = () => {
 
     const logIn = (name) => {
         enter(name);
-        const token = cookies.get('sid');
-        console.log(cookies);
+        const token = Cookies.get('sid');
+        console.log(Cookies);
+        console.log(token);
         if (token) {
             setToken(token);
         }
