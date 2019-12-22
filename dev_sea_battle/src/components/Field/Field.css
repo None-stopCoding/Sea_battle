@@ -1,19 +1,19 @@
-#field {
+.field {
     margin: 15px;
     user-select: none;
 }
 
-#row {
+.row {
     display: flex;
 }
 
 .cell {
     width: 33px;
     height: 33px;
-    border: 1px solid #A9A9A9;
+    border: 1px solid #2c2c2c;
     border-radius: 3px;
     background: darkcyan;
-    margin: 1px;
+    /*margin: 1px;*/
     transition: scale .1s ease-in-out;
     display: flex;
     justify-content: center;

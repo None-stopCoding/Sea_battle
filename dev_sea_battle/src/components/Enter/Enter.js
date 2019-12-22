@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import './Enter.css';
+import Cookies from 'universal-cookie';
 
 /* Модальное окно */
 const modal = document.getElementById('id01');
@@ -23,15 +24,15 @@ const EnterPage = ({ logIn }) => {
         }).then(res => {
             if(res.status===200) {
                 console.log('entered!', res);
-                logIn(userName);
+                const token = (new Cookies()).get('sid');
+                if (!token) {
+                    throw new Error("Что то пошло не так, сервер вас не пускает :(");
+                } else {
+                    logIn(userName, token);
+                }
             }
             throw new Error(res.statusText);
-        }).catch(e => alert(`Ошибка POST, ${e}`));
-
-        fetch('/api/users').then(res => {
-            if(res.status===200) console.log('success', res);
-            throw new Error(res.statusText);
-        }).catch(e => alert(`Ошибка GET, ${e}`));
+        }).catch(e => alert(e.message));
     };
 
     return(

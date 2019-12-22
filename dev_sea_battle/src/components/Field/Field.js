@@ -50,10 +50,10 @@ const Field = ({ field, mode, playFor, handleClick }) => {
     };
 
     return(
-        <div id="field">
+        <div className="field">
             {
                 field.map((row, rowIndex) =>
-                    <div id="row" key={rowIndex}>
+                    <div className="row" key={rowIndex}>
                         {
                             row.map((cell, index) => {
                                 const { idName, className } = getClassAndId(cell);

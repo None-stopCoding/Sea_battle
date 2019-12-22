@@ -40,7 +40,6 @@ const checkShipDestroyed = (ships, row, cell) => {
             if (++params.destroyed[index] === params.size) {
                 destroyedShip = params.units[index];
                 // TODO проверить для бота
-                // console.log(ship);
             }
         }
     });
@@ -54,6 +53,7 @@ const checkShipDestroyed = (ships, row, cell) => {
  */
 const Game = () => {
     const [mode, changeMode] = useState('prepare');
+    const [refresh, setRefresh] = useState('false');
     const [guessField, setGuess] = useState(copy(initialField));
     const [AIField, setAIField] = useState(copy(initialField));
     const [AIShips, setAIShips] = useState(copy(config.ships));
@@ -70,7 +70,7 @@ const Game = () => {
     const [stopTime, changeStopTime] = useState(0);
 
     useEffect(() => {
-        if (mode === 'prepare') {
+        if (mode === 'prepare' || refresh) {
             let newAIField = copy(initialField),
                 newPlayerField = copy(initialField);
 
@@ -82,8 +82,9 @@ const Game = () => {
 
             setGuess(copy(initialField));
             memorize({});
+            setRefresh(false);
         }
-    }, [mode]);
+    }, [mode, refresh]);
 
     useEffect(() => {
         if (hasWon.status) {
@@ -184,14 +185,6 @@ const Game = () => {
         return false;
     };
 
-    // const onTimerStop = () => {
-    //     if (mode === 'prepare') {
-    //         changeMode('play');
-    //     } else {
-    //         handleFieldClick(0, 0, 'player');
-    //     }
-    // };
-
     const handlePlayRestart = () => {
         if (mode === 'prepare') {
             changeMode('play');
@@ -226,11 +219,14 @@ const Game = () => {
             <div className="button_group">
                 <img src={`./img/${mode === 'prepare' ? 'power-button' : 'refresh'}.png`} alt="control"
                      onClick={() => handlePlayRestart()}/>
-
                 {
-                    mode === 'play' &&
-                    <img src={`./img/${play ? "pause" : "play"}.png`} alt="timer"
-                         onClick={() => timer(play => !play)}/>
+                    mode === 'prepare' ? (
+                        <img src={`./img/loop.png`} alt="refresh"
+                             onClick={() => setRefresh(true)}/>
+                    ) : (
+                        <img src={`./img/${play ? "pause" : "play"}.png`} alt="timer"
+                             onClick={() => timer(play => !play)}/>
+                    )
                 }
             </div>
         </div>

@@ -33,7 +33,7 @@ const Timer = ({ action, changeStopTime }) => {
 
     return(
         <div id='timer'>
-            {hours} : {minutes} : {seconds}
+            <strong>{hours} : {minutes} : {seconds}</strong>
         </div>
     )
 };

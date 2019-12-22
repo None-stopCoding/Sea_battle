@@ -2,9 +2,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    user-select: none;
+    margin-top: 60px;
 }
 
 #fields {
+    margin-top: 30px;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;

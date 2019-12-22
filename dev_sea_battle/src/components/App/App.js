@@ -1,11 +1,12 @@
 import React from 'react';
 import './App.css';
-import { Game } from './../Routing';
+import { Game, Chat } from './../Routing';
 
-const App = () => {
+const App = ({ userName }) => {
     return (
         <div id="App">
-            <Game/>
+            <Game name={userName}/>
+            <Chat />
         </div>
     );
 };
