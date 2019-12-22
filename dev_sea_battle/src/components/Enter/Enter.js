@@ -24,6 +24,7 @@ const EnterPage = ({ logIn }) => {
             if (res.status === 200) {
                 logIn(userName);
             }
+            console.log(res.status);
             throw new Error(res.statusText);
         }).catch(e => alert(e.message));
     };
