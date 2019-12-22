@@ -21,18 +21,16 @@ const EnterPage = ({ logIn }) => {
             },
             body: JSON.stringify(userName)
         }).then(res => {
-            if(res.status===200) return res.json();
+            if(res.status===200) {
+                console.log('entered!', res);
+                logIn(userName);
+            }
             throw new Error(res.statusText);
-        }).then(data => {
-            console.log(data);
-            logIn(userName);
         }).catch(e => alert(`Ошибка POST, ${e}`));
 
         fetch('/api/users').then(res => {
-            if(res.status===200) return res.json();
+            if(res.status===200) console.log('success', res);
             throw new Error(res.statusText);
-        }).then(data => {
-            console.log(data);
         }).catch(e => alert(`Ошибка GET, ${e}`));
     };
 
