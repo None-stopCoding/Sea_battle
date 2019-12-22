@@ -62,6 +62,10 @@ const Game = () => {
     // const [showResult, end] = useState(false);
     const [AIMemory, memorize] = useState({});
     const [AIIsThinking, think] = useState(false);
+    const [hasWon, setVictory] = useState({
+        status: false,
+        person: ''
+    });
 
     useEffect(() => {
         if (mode === 'prepare') {
@@ -89,6 +93,7 @@ const Game = () => {
                 const ship = checkShipDestroyed(AIShips, row, cell);
                 if (ship) {
                     generateSafeArea(copyAIField, ship, true);
+                    checkVictory('person', copyAIField);
                 }
                 setAIField(copyAIField);
             } else {
@@ -131,9 +136,9 @@ const Game = () => {
                             destroyedShip = true;
                             generateSafeArea(copyPlayerField, ship, true);
                             generateSafeArea(copyGuessField, ship, true);
+                            victory = checkVictory('AI', copyPlayerField);
                         }
-                        // TODO проверить работает ли выход из цикла при победе
-                        victory = isWinner(copyPlayerField);
+                        // victory = isWinner(copyPlayerField);
                         makeAIMove(createThought(true));
                     }, finished => {
                         rerender();
@@ -145,19 +150,35 @@ const Game = () => {
         }
     }
 
-    // TODO сделать компонент модального окна
-    useEffect(() => {
-        if (mode === 'play') {
-            console.log(AIField, playerField);
-            if (isWinner(AIField)) {
-                alert('Поздравляем! Вы победили!');
-                changeMode('prepare');
-            } else if (isWinner(playerField)) {
-                alert('Это поражение...Увы :(');
-                changeMode('prepare');
+    const checkVictory = (person, field) => {
+        if (isWinner(field)) {
+            let competitor = 'person';
+            if (person === 'AI') {
+                competitor = 'AI';
             }
+            setVictory({
+                status: true,
+                person: competitor
+            });
+            return true;
         }
-    }, [playerField, AIField]);
+        return false;
+    };
+    useEffect(() => {
+        if (hasWon.status) {
+            if (hasWon.person === 'person') {
+                alert('Поздравляем! Вы победили!');
+            } else {
+                alert('Это поражение...Увы :(');
+            }
+
+            changeMode('prepare');
+            setVictory({
+                status: false,
+                person: ''
+            })
+        }
+    }, [hasWon]);
 
     return (
         <div id="game">
