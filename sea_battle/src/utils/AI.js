@@ -41,13 +41,13 @@ const AI = (field, destroyed, points) => {
         };
     };
 
-    const searchEndPoint = (missedShot = false) => {
+    const searchEndPoint = () => {
         const tail = {
             tailRow: null,
             tailCell: null
         };
 
-        if (missedShot) {
+        // if (missedShot) {
             const directions = [
                 { offset: { row: -1, cell: 0 } },     // вверх
                 { offset: { row: 0, cell: 1 } },      // вправо
@@ -58,26 +58,45 @@ const AI = (field, destroyed, points) => {
                 checkCanVisit(startPoint.row + dir.offset.row, startPoint.cell + dir.offset.cell) &&
                         !field[startPoint.row + dir.offset.row][startPoint.cell + dir.offset.cell]);
             // console.log("tail", availableDirs);
-            const movedEndPoint = getMovedEndPoint(startPoint);
-            const tryIndex =
-                availableDirs.findIndex(dir =>
-                    dir.offset.row === movedEndPoint.row - startPoint.row &&
-                    dir.offset.cell === movedEndPoint.cell - startPoint.cell);
-            if (tryIndex !== -1) {
-                tail.tailRow = startPoint.row + availableDirs[tryIndex].offset.row;
-                tail.tailCell = startPoint.cell + availableDirs[tryIndex].offset.cell;
-            } else {
+            if ((startPoint.row - endPoint.row) && (startPoint.cell - endPoint.cell)) {
+                const movedEndPoint = getMovedEndPoint(startPoint);
+                const tryIndex =
+                    availableDirs.findIndex(dir =>
+                        dir.offset.row === movedEndPoint.row - startPoint.row &&
+                        dir.offset.cell === movedEndPoint.cell - startPoint.cell);
+                if (tryIndex !== -1) {
+                    tail.tailRow = startPoint.row + availableDirs[tryIndex].offset.row;
+                    tail.tailCell = startPoint.cell + availableDirs[tryIndex].offset.cell;
+                }
+            }
+
+            if (tail.tailCell === null) {
                 const tryDir = availableDirs[_.random(availableDirs.length - 1)].offset;
                 tail.tailRow = startPoint.row + tryDir.row;
                 tail.tailCell = startPoint.cell + tryDir.cell;
                 console.log("tryDir", tryDir);
             }
+            // const movedEndPoint = getMovedEndPoint(startPoint);
+            // const tryIndex =
+            //     availableDirs.findIndex(dir =>
+            //         dir.offset.row === movedEndPoint.row - startPoint.row &&
+            //         dir.offset.cell === movedEndPoint.cell - startPoint.cell);
+            // if (tryIndex !== -1) {
+            //     tail.tailRow = startPoint.row + availableDirs[tryIndex].offset.row;
+            //     tail.tailCell = startPoint.cell + availableDirs[tryIndex].offset.cell;
+            // } else {
+            //     const tryDir = availableDirs[_.random(availableDirs.length - 1)].offset;
+            //     tail.tailRow = startPoint.row + tryDir.row;
+            //     tail.tailCell = startPoint.cell + tryDir.cell;
+            //     console.log("tryDir", tryDir);
+            // }
             console.log("tail", tail);
-        } else {
-            const movedEndPoint = getMovedEndPoint(startPoint, true);
-            tail.tailRow = movedEndPoint.row;
-            tail.tailCell = movedEndPoint.cell;
-        }
+        // }
+        // else {
+        //     const movedEndPoint = getMovedEndPoint(startPoint, true);
+        //     tail.tailRow = movedEndPoint.row;
+        //     tail.tailCell = movedEndPoint.cell;
+        // }
 
         return tail;
     };
@@ -97,7 +116,7 @@ const AI = (field, destroyed, points) => {
             (startPoint.row === endPoint.row && startPoint.cell === endPoint.cell) ||
             field[endPoint.row][endPoint.cell] === (-1) * config.safeValue) {
         console.log("in second", startPoint, endPoint);
-        const { tailRow, tailCell } = searchEndPoint(true);
+        const { tailRow, tailCell } = searchEndPoint();
         choice.row = tailRow;
         choice.cell = tailCell;
         ship.startPoint = startPoint;
