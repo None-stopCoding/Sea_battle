@@ -1,0 +1,184 @@
+body {font-family: Arial, Helvetica, sans-serif;}
+html{
+    background:url('https://www.tokkoro.com/picsup/2929038-ship-old-ship-island-rocks-birds-storm-water-sea-rain-clouds-sailing___animal-wallpapers.jpg') no-repeat center center;
+    min-height:100%;
+    background-size:cover;
+}
+body{
+    min-height:100%;
+}
+
+input[type=text], input[type=password] {
+    width: 60vh;
+    padding: 2vh 2vh;
+    margin: 0px 0;
+    font-size: 2vh;
+    display: inline-block;
+    box-sizing: border-box;
+}
+/* Общие стили кнопок */
+.button1 {
+    color: white;
+    height: 100%;
+    margin: 5px 0;
+    cursor: pointer;
+    font-size: 3.6vh;
+    border: black;
+    width: 100%;
+    height: 10vh;
+}
+
+.button1:hover {
+    opacity: 1;
+}
+/* корбалик внутри формы */
+.imgcontainer {
+    text-align: center;
+    margin: 1vh 0 1vh 0;
+    position: relative;
+}
+
+img.avatar {
+    width: 20vh;
+}
+
+.container {
+    padding: 1vh;
+}
+
+span.psw {
+    float: right;
+    padding-top: 3vh;
+}
+/* Сама форма */
+.modal {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background:url('https://www.tokkoro.com/picsup/2929038-ship-old-ship-island-rocks-birds-storm-water-sea-rain-clouds-sailing___animal-wallpapers.jpg') no-repeat center center;
+    min-height:100%;
+    background-size:cover;
+    overflow: auto;
+    background-color: red;
+}
+.modal:target {
+    opacity: 1;
+    pointer-events: auto;
+    overflow-y: auto;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    margin: 10% auto 10% auto;
+    border: 2px solid black;
+    box-sizing: border-box;
+    width: 62vh;
+    opacity: 1;
+}
+@media (min-width: 768px) {
+    .modal-content {
+        -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
+    }
+}
+/* X - закрытие формы */
+.close {
+    position: absolute;
+    right:3vh;
+    top: 0;
+    margin: auto;
+    color: rgb(0, 0, 0);;
+    font-size: 7vh;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: red;
+    cursor: pointer;
+}
+/* Анимация к форме */
+.animate {
+    -webkit-animation: animatezoom 2s;
+    animation: animatezoom 2s
+}
+
+@-webkit-keyframes animatezoom {
+    from {-webkit-transform: scale(0)}
+    to {-webkit-transform: scale(1)}
+}
+
+@keyframes animatezoom {
+    from {transform: scale(0)}
+    to {transform: scale(1)}
+}
+
+
+@media screen and (max-width: 300px) {
+    span.psw {
+        display: block;
+        float: none;
+    }
+    /* Кнопка входа в игру */
+}
+.button1{
+    background-color: green;
+}
+.button1 hover{
+    background-color: red;
+}
+/* Кнопка открытия формы для авторизации */
+.ENT {
+    text-decoration: none;
+    outline: none;
+    text-align: center;
+    position: absolute;
+    margin-top: -5vh;
+    top: 50%;
+    background: rgba(255, 255, 255, 0);
+    width: 55vh;
+    height: 10vh;
+    margin-left: -25vh;
+    left: 50%;
+    display: block;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.4);
+    font-size: 2.6vh;
+    font-family: Lobster, cursive;
+    text-transform: uppercase;
+}
+.ENT:before,
+.ENT:after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    box-sizing: border-box;
+}
+.ENT:before {
+    bottom: 0;
+    left: 0;
+    border-left: 1px solid white;
+    border-top: 1px solid white;
+    transition: width .2s ease .4s, height .2s ease .6s;
+}
+.ENT:after {
+    top: 0;
+    right: 0;
+
+    border-right: 1px solid white;
+    border-bottom: 1px solid white;
+    transition: 0s  ease width , .2s ease height .2s;
+}
+.ENT:hover:before,
+.ENT:hover:after{
+    height: 100%;
+    width: 100%;
+}
+.ENT:hover:before {transition: .2s ease height, .2s ease width .2s;}
+.ENT:hover:after {transition: height .2s ease .4s , width .2s ease .6s;}
+.ENT:hover {background: rgba(2, 19, 31, 0.2);}
