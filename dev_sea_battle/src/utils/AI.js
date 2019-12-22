@@ -48,34 +48,34 @@ const AI = (field, destroyed, points) => {
         };
 
         // if (missedShot) {
-            const directions = [
-                { offset: { row: -1, cell: 0 } },     // вверх
-                { offset: { row: 0, cell: 1 } },      // вправо
-                { offset: { row: 1, cell: 0 } },      // вниз
-                { offset: { row: 0, cell: -1 } }      // влево
-            ];
-            const availableDirs = directions.filter(dir =>
-                checkCanVisit(startPoint.row + dir.offset.row, startPoint.cell + dir.offset.cell) &&
-                        !field[startPoint.row + dir.offset.row][startPoint.cell + dir.offset.cell]);
-            // console.log("tail", availableDirs);
-            if ((startPoint.row - endPoint.row) && (startPoint.cell - endPoint.cell)) {
-                const movedEndPoint = getMovedEndPoint(startPoint);
-                const tryIndex =
-                    availableDirs.findIndex(dir =>
-                        dir.offset.row === movedEndPoint.row - startPoint.row &&
-                        dir.offset.cell === movedEndPoint.cell - startPoint.cell);
-                if (tryIndex !== -1) {
-                    tail.tailRow = startPoint.row + availableDirs[tryIndex].offset.row;
-                    tail.tailCell = startPoint.cell + availableDirs[tryIndex].offset.cell;
-                }
+        const directions = [
+            { offset: { row: -1, cell: 0 } },     // вверх
+            { offset: { row: 0, cell: 1 } },      // вправо
+            { offset: { row: 1, cell: 0 } },      // вниз
+            { offset: { row: 0, cell: -1 } }      // влево
+        ];
+        const availableDirs = directions.filter(dir =>
+            checkCanVisit(startPoint.row + dir.offset.row, startPoint.cell + dir.offset.cell) &&
+                    !field[startPoint.row + dir.offset.row][startPoint.cell + dir.offset.cell]);
+        // console.log("tail", availableDirs);
+        if ((startPoint.row - endPoint.row) && (startPoint.cell - endPoint.cell)) {
+            const movedEndPoint = getMovedEndPoint(startPoint);
+            const tryIndex =
+                availableDirs.findIndex(dir =>
+                    dir.offset.row === movedEndPoint.row - startPoint.row &&
+                    dir.offset.cell === movedEndPoint.cell - startPoint.cell);
+            if (tryIndex !== -1) {
+                tail.tailRow = startPoint.row + availableDirs[tryIndex].offset.row;
+                tail.tailCell = startPoint.cell + availableDirs[tryIndex].offset.cell;
             }
+        }
 
-            if (tail.tailCell === null) {
-                const tryDir = availableDirs[_.random(availableDirs.length - 1)].offset;
-                tail.tailRow = startPoint.row + tryDir.row;
-                tail.tailCell = startPoint.cell + tryDir.cell;
-                console.log("tryDir", tryDir);
-            }
+        if (tail.tailCell === null) {
+            const tryDir = availableDirs[_.random(availableDirs.length - 1)].offset;
+            tail.tailRow = startPoint.row + tryDir.row;
+            tail.tailCell = startPoint.cell + tryDir.cell;
+            console.log("tryDir", tryDir);
+        }
             // const movedEndPoint = getMovedEndPoint(startPoint);
             // const tryIndex =
             //     availableDirs.findIndex(dir =>
