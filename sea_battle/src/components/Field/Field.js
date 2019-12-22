@@ -24,6 +24,9 @@ const Field = ({ field, mode, playFor, handleClick }) => {
             idName = 'killed';
         }
 
+        if (mode === 'prepare') {
+            className += ' big_cell';
+        }
         if (typeof value === 'string') {
             className += ' safe';
         } else {
