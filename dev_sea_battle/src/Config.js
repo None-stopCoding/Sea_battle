@@ -28,5 +28,8 @@ export const config = {
     },
     safeValue: 5,
     timeAIIsWaiting: 500,
-    timerStart: 30
+    timerStart: 30,
+    defaultHeaders: {
+        'Content-Type': 'application/json; charset=utf-8'
+    }
 };

@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import './Enter.css';
 import Cookies from 'universal-cookie';
+import {config} from "../../Config";
 
 /* Модальное окно */
 const modal = document.getElementById('id01');
@@ -17,14 +18,13 @@ const EnterPage = ({ logIn }) => {
         e.preventDefault();
         fetch('/api/users',{
             method:'post',
-            headers:{
-                'Content-Type':'application/json; charset=utf-8'
-            },
+            headers:{ ...config.defaultHeaders },
             body: JSON.stringify({name: userName})
         }).then(res => {
             if(res.status===200) {
                 console.log('entered!', res);
                 const token = (new Cookies()).get('sid');
+                console.log(token);
                 if (!token) {
                     throw new Error("Что то пошло не так, сервер вас не пускает :(");
                 } else {
