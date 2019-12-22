@@ -23,10 +23,12 @@ const EnterPage = ({ logIn }) => {
         }).then(res => {
             if (res.status === 200) {
                 logIn(userName);
+                console.log(res.json());
             } else if (res.status === 400) {
                 throw new Error("Польователь с таким именем уже существует")
+            } else {
+                throw new Error(res.statusText);
             }
-            throw new Error(res.statusText);
         }).catch(e => alert(e));
     };
 

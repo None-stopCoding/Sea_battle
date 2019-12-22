@@ -32,7 +32,7 @@ const Main = () => {
     const logIn = (name) => {
         enter(name);
         const token = Cookies.get('sid');
-        console.log(Cookies);
+        console.log(document.cookie);
         console.log(token);
         if (token) {
             setToken(token);
