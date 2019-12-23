@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Timer.css';
 
-const Timer = ({ action, changeStopTime }) => {
+const Timer = ({ action }) => {
     const [time, update] = useState(0);
     const [interval, change] = useState(null);
     const [hours, setHours] = useState(null);
@@ -17,7 +17,7 @@ const Timer = ({ action, changeStopTime }) => {
 
     useEffect(() => action ? start() : stop(), [action]);
 
-    useEffect(() => changeStopTime(time));
+    // useEffect(() => changeStopTime(time));
 
     useEffect(() => {
         let hours = 0, minutes = 0, seconds = 0;

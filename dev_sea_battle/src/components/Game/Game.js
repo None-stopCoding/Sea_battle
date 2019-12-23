@@ -60,6 +60,7 @@ const checkShipDestroyed = (ships, row, cell) => {
  * @constructor
  */
 const Game = ({ name }) => {
+    const [gameID, setGameID] = useState('');
     const [mode, changeMode] = useState('prepare');
     const [refresh, setRefresh] = useState('false');
     const [guessField, setGuess] = useState(copy(initialField));
@@ -74,7 +75,7 @@ const Game = ({ name }) => {
         person: ''
     });
     const [play, timer] = useState(true);
-    const [stopTime, changeStopTime] = useState(0);
+    // const [stopTime, changeStopTime] = useState(0);
 
     useEffect(() => {
         if (mode === 'prepare' || refresh) {
@@ -106,9 +107,32 @@ const Game = ({ name }) => {
             setVictory({
                 status: false,
                 person: ''
-            })
+            });
+            sendGameResult();
         }
-    }, [hasWon]);
+    });
+
+    const sendGameResult = () => {
+        if (!gameID) {
+            console.log('Game ID не задан')
+        } else {
+            fetch('/api/records', {
+                method: 'patch',
+                headers: { ...config.defaultHeaders },
+                body: JSON.stringify({
+                    id: gameID,
+                    score: AIField.flat().filter(cell =>
+                        +cell > 0 && +cell !== config.safeValue).length
+                })
+            }).then(res => {
+                if (res.status === 200) {
+                    console.log(`Sent score data successfully`);
+                } else {
+                    throw new Error(res.statusText);
+                }
+            }).catch(e => console.log(e));
+        }
+    };
     
     function handleFieldClick(row, cell, playFor)
     {
@@ -207,13 +231,29 @@ const Game = ({ name }) => {
         if (mode === 'prepare') {
             changeMode('play');
             timer(true);
+            fetch('/api/records', {
+                method: 'post',
+                headers: { ...config.defaultHeaders },
+                body: JSON.stringify({ game: "Морской бой" })
+            }).then(res => {
+                if (res.status === 200) {
+                    console.log('Successfully notify server about game start');
+                    return res.json();
+                } else {
+                    throw new Error(res.statusText);
+                }
+            }).then(data => {
+                console.log(data);
+                setGameID(data.id);
+            }).catch(e => console.log(e));
         } else {
             timer(false);
             changeMode('prepare');
+            sendGameResult();
         }
     };
 
-    const handleStopTimer = (value) => changeStopTime(value);
+    // const handleStopTimer = (value) => changeStopTime(value);
 
     return (
         <div id="game">
@@ -221,7 +261,7 @@ const Game = ({ name }) => {
                 mode === 'play' &&
                 <div className="game_header">
                     <Ships fleet={playerShips} name="Smart" player="AI"/>
-                    <Timer action={play} changeStopTime={handleStopTimer}/>
+                    <Timer action={play}/>
                     <Ships fleet={AIShips} name={name} player="user"/>
                 </div>
             }
@@ -247,7 +287,12 @@ const Game = ({ name }) => {
                              onClick={() => setRefresh(true)}/>
                     ) : (
                         <img src={`./img/${play ? "pause" : "play"}.png`} alt="timer"
-                             onClick={() => timer(play => !play)}/>
+                             onClick={() => {
+                                 if (play) {
+                                     sendGameResult();
+                                 }
+                                 timer(play => !play);
+                             }}/>
                     )
                 }
             </div>
