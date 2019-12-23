@@ -7,16 +7,12 @@ import {config} from "./Config";
 
 const Main = () => {
     const [userName, enter] = useState('');
-    const [authToken, setToken] = useState(Cookies.get('sid'));
 
     useEffect(() => {
         // console.log(authToken);
-        if (authToken) {
+        if (userName) {
             fetch('/api/users', {
-                headers: {
-                    ...config.defaultHeaders,
-                    'Cookie': 'sid=' + authToken
-                }
+                headers: { ...config.defaultHeaders }
             }).then(res => {
                 if (res.status === 200) {
                     return res.json();
@@ -31,16 +27,10 @@ const Main = () => {
 
     const logIn = (name) => {
         enter(name);
-        const token = Cookies.get('sid');
-        console.log("document.cookie ", document.cookie);
-        console.log(Cookies.get('mycookie'));
-        if (token) {
-            setToken(token);
-        }
     };
 
     return(
-        authToken || userName ? <App userName={userName}/> : <EnterPage logIn={logIn}/>
+        userName ? <App userName={userName}/> : <EnterPage logIn={logIn}/>
     );
 };
 

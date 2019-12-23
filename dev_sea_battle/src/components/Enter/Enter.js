@@ -19,12 +19,9 @@ const EnterPage = ({ logIn }) => {
         fetch('/api/users',{
             method:'post',
             headers:{ ...config.defaultHeaders },
-            withCredentials: true,
             body: JSON.stringify({name: userName})
         }).then(res => {
             if (res.status === 200) {
-                console.log(res.headers);
-                Cookies.set('mycookie', 'somedummetext');
                 logIn(userName);
             } else if (res.status === 400) {
                 throw new Error("Польователь с таким именем уже существует")
