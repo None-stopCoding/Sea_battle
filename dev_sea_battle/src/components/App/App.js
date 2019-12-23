@@ -8,7 +8,7 @@ const App = ({ logout, userName }) => {
             <img className="logout" src="./img/logout.png" alt="logout"
                 onClick={() => logout()}/>
             <Game name={userName}/>
-            <Chat />
+            <Chat name={userName}/>
         </div>
     );
 };

@@ -1,13 +1,5 @@
 import {Component} from "react";
 import React from "react";
-import _ from "underscore";
-
-function randomColor() {
-    return "rgba(" +
-        _.random(255) + ", " +
-        _.random(255) + ", " +
-        _.random(255) + ", 0.65)";
-}
 
 class Message extends Component {
     render() {
@@ -20,9 +12,8 @@ class Message extends Component {
     }
 
     renderMessage(message) {
-        const {member, text} = message;
-        const {currentMember} = this.props;
-        const messageFromMe = member.id === currentMember.id;
+        const {name, text, color, isMine, game, time} = message;
+        const messageFromMe = isMine;
         const className = messageFromMe ?
             "Messages-message currentMember" : "Messages-message";
         return (
@@ -31,10 +22,11 @@ class Message extends Component {
                     {
                         !messageFromMe &&
                         <div className="username">
-                            { member.username}
+                            {name} -> {game}
                         </div>
                     }
-                    <div className="text" style={{backgroundColor: currentMember.color}}>{text}</div>
+                    <div className="text" style={{backgroundColor: color}}>{text}</div>
+                    <div className="text">{time}</div>
                 </div>
             </li>
         );

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {config} from "../../Config";
 import _ from 'underscore';
 import './Chat.css';
 import { Input, Messages } from "./../Routing";
@@ -7,17 +8,51 @@ function randomColor() {
     return "rgba(" +
         _.random(255) + ", " +
         _.random(255) + ", " +
-        _.random(255) + ", 0.8)";
+        _.random(255) + ", 0.65)";
 }
 
 class Chat extends Component {
     state = {
         messages: [],
-        member: {
-            username: 'name',
-            color: randomColor(),
-        }
+        interval: null
     };
+
+    componentDidMount() {
+        this.setState({
+            interval: setInterval(() => this.loadMessages(), config.timeLoadChatMessages)
+        })
+    }
+
+    loadMessages() {
+        const messages = this.state.messages;
+        fetch('/api/messages', {
+            headers: { ...config.defaultHeaders }
+        }).then(res => {
+            if (res.status === 200) {
+                console.log('Successfully loaded messages');
+                return res.json();
+            } else {
+                throw new Error(res.statusText);
+            }
+        }).then(data => {
+            data.forEach(message => {
+                const { user, game, text, time, isMine } = message;
+                messages.push({
+                    name: user,
+                    text: text,
+                    color: randomColor(),
+                    isMine: isMine,
+                    game: game,
+                    time: time
+                });
+            });
+            this.setState({messages: messages});
+        }).catch(e => console.log(e));
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.state.interval);
+    }
 
     render() {
         return (
@@ -27,7 +62,6 @@ class Chat extends Component {
                 </div>
                 <Messages
                     messages={this.state.messages}
-                    currentMember={this.state.member}
                 />
                 <Input
                     onSendMessage={this.onSendMessage}
@@ -36,13 +70,19 @@ class Chat extends Component {
         );
     }
 
-    onSendMessage = (message) => {
-        const messages = this.state.messages;
-        const member = this.state.member;
-        messages.push({member,text: message});
-        this.setState({messages});
+    onSendMessage = (text) => {
+        fetch('/api/messages', {
+            headers: { ...config.defaultHeaders },
+            body: JSON.stringify({text: text})
+        }).then(res => {
+            if (res.status === 200) {
+                console.log('Successfully sent message to server');
+                this.loadMessages();
+            } else {
+                throw new Error(res.statusText);
+            }
+        }).catch(e => console.log(e));
     }
-
 }
 
 export default Chat;

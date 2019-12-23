@@ -31,5 +31,6 @@ export const config = {
     timerStart: 30,
     defaultHeaders: {
         'Content-Type': 'application/json; charset=utf-8'
-    }
+    },
+    timeLoadChatMessages: 5000
 };
