@@ -23,7 +23,7 @@ class Message extends Component {
                     {
                         !messageFromMe &&
                         <div className="username">
-                            {name} -> {game}
+                            <strong>{name} -> {game}</strong>
                         </div>
                     }
                     <div className="text" style={{backgroundColor: color}}>{text}</div>
