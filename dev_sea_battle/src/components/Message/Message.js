@@ -25,7 +25,7 @@ class Message extends Component {
                         <div className="username">
                             <strong>
                                 {name}
-                                <span>{game && '->'}</span>
+                                <span>{game && ' -> '}</span>
                                 {game}
                             </strong>
                         </div>
