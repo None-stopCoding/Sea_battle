@@ -7,7 +7,7 @@ const App = ({ logout, userName }) => {
     return (
         <div id="App">
             <img className="logout" src="./img/logout.png" alt="logout"
-                onClick={logout()}/>
+                onClick={() => logout()}/>
             <Game name={userName}/>
             <Chat />
         </div>
