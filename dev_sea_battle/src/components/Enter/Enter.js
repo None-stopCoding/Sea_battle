@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import './Enter.css';
-import Cookies from 'js-cookie';
 import {config} from "../../Config";
 
 /* Модальное окно */
@@ -16,19 +15,19 @@ const EnterPage = ({ logIn }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fetch('/api/users',{
-            method:'post',
-            headers:{ ...config.defaultHeaders },
-            body: JSON.stringify({name: userName})
-        }).then(res => {
-            if (res.status === 200) {
+        // fetch('/api/users',{
+        //     method:'post',
+        //     headers:{ ...config.defaultHeaders },
+        //     body: JSON.stringify({name: userName})
+        // }).then(res => {
+        //     if (res.status === 200) {
                 logIn(userName);
-            } else if (res.status === 400) {
-                throw new Error("Польователь с таким именем уже существует")
-            } else {
-                throw new Error(res.statusText);
-            }
-        }).catch(e => alert(e));
+        //     } else if (res.status === 400) {
+        //         throw new Error("Польователь с таким именем уже существует")
+        //     } else {
+        //         throw new Error(res.statusText);
+        //     }
+        // }).catch(e => alert(e));
     };
 
     return(
