@@ -14,44 +14,54 @@ function randomColor() {
 class Chat extends Component {
     state = {
         messages: [],
-        interval: null,
         color: null
     };
 
     componentDidMount() {
+        this.loadMessages(() => this.initiateLoad());
         this.setState({
-            interval: setInterval(() => this.loadMessages(), config.timeLoadChatMessages),
             color: randomColor()
-        })
+        });
     }
 
-    loadMessages() {
+    loadMessages(promise) {
         const messages = [];
-        fetch('/api/messages', {
-            headers: { ...config.defaultHeaders }
-        }).then(res => {
-            if (res.status === 200) {
-                console.log('Successfully loaded messages');
-                return res.json();
-            } else {
-                throw new Error(res.statusText);
-            }
-        }).then(data => {
-            data.forEach(message => {
-                const { user, game, text, time, isMine } = message;
-                messages.push({
-                    name: user,
-                    text: text,
-                    isMine: isMine,
-                    game: game,
-                    time: time
+        promise.then(() =>
+            fetch('/api/messages', {
+                headers: { ...config.defaultHeaders }
+            }).then(res => {
+                if (res.status === 200) {
+                    console.log('Successfully loaded messages');
+                    return res.json();
+                } else {
+                    throw new Error(res.statusText);
+                }
+            }).then(data => {
+                data.forEach(message => {
+                    const { user, game, text, time, isMine } = message;
+                    messages.push({
+                        name: user,
+                        text: text,
+                        isMine: isMine,
+                        game: game,
+                        time: time
+                    });
                 });
-            });
-            const content = document.getElementsByClassName('Message-content');
-            content.scrollTop = content.scrollHeight;
-            this.setState({messages: messages});
-        }).catch(e => console.log(e));
+                const content = document.getElementsByClassName('Message-content');
+                content.scrollTop = content.scrollHeight;
+                this.setState({messages: messages});
+            }).catch(e =>
+                console.log(e)
+            ).then(() => this.loadMessages(() => this.initiateLoad()))
+        );
     }
+
+    initiateLoad = () =>
+        new Promise((resolve, reject) => {
+            setTimeout(() => {
+                console.log('wait for messages');
+            }, config.timeLoadChatMessages)
+        });
 
     componentWillUnmount() {
         clearInterval(this.state.interval);
