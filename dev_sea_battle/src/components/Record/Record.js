@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {config} from "../../Config";
+import {convertUnix} from "../../utils/Routing";
 
 const Record = () => {
     const [records, update] = useState([]);
@@ -24,23 +25,34 @@ const Record = () => {
     };
 
     return (
-        <table>
+        <div>
             {
-                !!records.length ? (
-                    <tr>
-                        <th>Игрок</th>
-                        <th>Очки</th>
-                        <th>Время</th>
-                    </tr>
+                records.length ? (
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>Игрок</th>
+                                <th>Очки</th>
+                                <th>Время</th>
+                            </tr>
+                            {
+                                records.map((record, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td>{record.user}</td>
+                                            <td>{record.score}</td>
+                                            <td>{convertUnix(record.time)}</td>
+                                        </tr>
+                                    )
+                                })
+                            }
+                        </tbody>
+                    </table>
                 ) : (
-                    <tr>
-                        <td>
-                            Никто еще не решился попробовать свои силы.
-                        </td>
-                    </tr>
+                    <p>Никто еще не решился попробовать свои силы.</p>
                 )
             }
-        </table>
+        </div>
     )
 };
 

@@ -17,7 +17,7 @@ const Modal = ({ onClose, show, children }) => {
             </div>
             <div className="actions_records">
                 <button className="toggle-button" onClick={() => handleOnClose()}>
-                    close
+                    Закрыть
                 </button>
             </div>
         </div>
