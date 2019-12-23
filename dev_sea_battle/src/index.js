@@ -33,6 +33,7 @@ const Main = () => {
         enter(name);
         const token = Cookies.get('sid');
         console.log("document.cookie ", document.cookie);
+        console.log(Cookies.get('mycookie'));
         if (token) {
             setToken(token);
         }
