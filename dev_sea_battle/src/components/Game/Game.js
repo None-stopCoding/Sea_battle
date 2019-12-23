@@ -119,7 +119,7 @@ const Game = ({ name }) => {
             const score = AIField.flat().filter(cell =>
                 +cell < 0 && +cell !== (-1) * config.safeValue).length;
 
-            fetch(`/api/records?id=${gameID}`, {
+            fetch(`/api/records/${gameID}`, {
                 method: 'patch',
                 headers: { ...config.defaultHeaders },
                 body: JSON.stringify({score: score})
