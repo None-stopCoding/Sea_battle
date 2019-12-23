@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import './Enter.css';
-import Cookies from 'universal-cookie';
+import Cookies from 'js-cookie';
 import {config} from "../../Config";
 
 /* Модальное окно */
@@ -19,6 +19,7 @@ const EnterPage = ({ logIn }) => {
         fetch('/api/users',{
             method:'post',
             headers:{ ...config.defaultHeaders },
+            withCredentials: true,
             body: JSON.stringify({name: userName})
         }).then(res => {
             if (res.status === 200) {
