@@ -10,6 +10,12 @@ const Record = () => {
         start(setInterval(() => loadRecords(), config.timeLoadRecords));
     }, []);
 
+    useEffect(() => {
+        return () => {
+            clearInterval(interval);
+        }
+    }, []);
+
     const loadRecords = () => {
         fetch('/api/records', {
             headers: { ...config.defaultHeaders }
