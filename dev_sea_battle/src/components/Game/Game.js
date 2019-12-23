@@ -121,9 +121,11 @@ const Game = ({ name }) => {
 
             console.log(gameID, typeof gameID);
             console.log(score, typeof score);
-            fetch(`/api/records/${gameID}`, {
+            fetch(`http://localhost:8080/api/records/${gameID}`, {
                 method: 'patch',
-                headers: { ...config.defaultHeaders },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
                     id: gameID,
                     score: score
