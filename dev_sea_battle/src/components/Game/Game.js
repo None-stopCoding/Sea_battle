@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import _ from 'underscore';
 import './Game.css';
-import { Field, Timer } from './../Routing';
+import { Field, Timer, Ships } from './../Routing';
 import { initialField, AI, generateShip,
          copy, generateSafeArea, configureField } from "../../utils/Routing";
 import {config} from "../../Config";
@@ -29,7 +29,9 @@ const isWinner = (field) =>
     ).length;
 
 const checkShipDestroyed = (ships, row, cell) => {
-    let destroyedShip = null;
+    let destroyedShip = null,
+        shipType = null,
+        destroyedIndex = null;
     Object.entries(ships).forEach(([ship, params]) => {
         const index = params.units.findIndex(unit =>
             !!unit.filter(point =>
@@ -39,11 +41,17 @@ const checkShipDestroyed = (ships, row, cell) => {
         if (index !== -1) {
             if (++params.destroyed[index] === params.size) {
                 destroyedShip = params.units[index];
+                shipType = ship;
+                destroyedIndex = index;
                 // TODO проверить для бота
             }
         }
     });
-    return destroyedShip;
+    return {
+        destroyedShip: destroyedShip,
+        shipType: shipType,
+        destroyedIndex: destroyedIndex
+    }
 };
 
 /**
@@ -51,7 +59,7 @@ const checkShipDestroyed = (ships, row, cell) => {
  * @returns {*}
  * @constructor
  */
-const Game = () => {
+const Game = ({ name }) => {
     const [mode, changeMode] = useState('prepare');
     const [refresh, setRefresh] = useState('false');
     const [guessField, setGuess] = useState(copy(initialField));
@@ -59,7 +67,6 @@ const Game = () => {
     const [AIShips, setAIShips] = useState(copy(config.ships));
     const [playerField, setPlayerField] = useState(copy(initialField));
     const [playerShips, setPlayerShips] = useState(copy(config.ships));
-    // const [showResult, end] = useState(false);
     const [AIMemory, memorize] = useState({});
     const [AIIsThinking, think] = useState(false);
     const [hasWon, setVictory] = useState({
@@ -110,8 +117,14 @@ const Game = () => {
 
             configureField(copyAIField, row, cell);
             if (+copyAIField[row][cell] !== (-1) * config.safeValue) {
-                const ship = checkShipDestroyed(AIShips, row, cell);
+                const { destroyedShip: ship,
+                        shipType: type,
+                        destroyedIndex: index } = checkShipDestroyed(AIShips, row, cell);
                 if (ship) {
+                    const copyAIShips = copy(AIShips);
+                    copyAIShips[type].units.splice(index, 1);
+                    setAIShips(copyAIShips);
+
                     generateSafeArea(copyAIField, ship, true);
                     checkVictory('person', copyAIField);
                 }
@@ -151,14 +164,19 @@ const Game = () => {
                         destroyedShip = false;
                         copyMemo = rest;
                         copyGuessField[rowAI][cellAI] = value = configureField(copyPlayerField, rowAI, cellAI);
-                        const ship = checkShipDestroyed(playerShips, rowAI, cellAI);
+                        const { destroyedShip: ship,
+                                shipType: type,
+                                destroyedIndex: index } = checkShipDestroyed(playerShips, rowAI, cellAI);
                         if (ship) {
                             destroyedShip = true;
+                            const copyPlayerShips = copy(playerShips);
+                            copyPlayerShips[type].units.splice(index, 1);
+                            setPlayerShips(copyPlayerShips);
+
                             generateSafeArea(copyPlayerField, ship, true);
                             generateSafeArea(copyGuessField, ship, true);
                             victory = checkVictory('AI', copyPlayerField);
                         }
-                        // victory = isWinner(copyPlayerField);
                         makeAIMove(createThought(true));
                     }, finished => {
                         rerender();
@@ -201,7 +219,11 @@ const Game = () => {
         <div id="game">
             {
                 mode === 'play' &&
-                <Timer action={play} changeStopTime={handleStopTimer}/>
+                <div className="game_header">
+                    <Ships fleet={playerShips} name="Smart" player="AI"/>
+                    <Timer action={play} changeStopTime={handleStopTimer}/>
+                    <Ships fleet={AIShips} name={name} player="user"/>
+                </div>
             }
             <div id="fields">
                 <Field playFor={mode === 'prepare' ? 'player' : 'AI'}
