@@ -117,14 +117,15 @@ const Game = ({ name }) => {
             console.log('Game ID не задан')
         } else {
             const score = AIField.flat().filter(cell =>
-                +cell > 0 && +cell !== config.safeValue).length;
+                +cell < 0 && +cell !== (-1) * config.safeValue).length;
+            const data = JSON.stringify({
+                id: gameID,
+                score: score
+            });
             fetch('/api/records', {
                 method: 'patch',
                 headers: { ...config.defaultHeaders },
-                body: JSON.stringify({
-                    id: gameID,
-                    score: score
-                })
+                body: data
             }).then(res => {
                 if (res.status === 200) {
                     console.log(`Sent score data successfully`);
@@ -133,8 +134,7 @@ const Game = ({ name }) => {
                 }
             }).catch(e => {
                 console.log(e);
-                console.log(gameID);
-                console.log(score);
+                console.log(data);
             });
         }
     };
@@ -248,7 +248,6 @@ const Game = ({ name }) => {
                     throw new Error(res.statusText);
                 }
             }).then(data => {
-                console.log(data);
                 setGameID(data.id);
             }).catch(e => console.log(e));
         } else {
