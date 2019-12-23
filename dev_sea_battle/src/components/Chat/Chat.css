@@ -4,6 +4,7 @@
     justify-content: space-between;
     height: 95vh;
     background: rgba(21, 147, 128, 0.7);
+    border-radius: 10px;
 }
 
 @media screen and (max-width: 1080px) {
@@ -14,7 +15,7 @@
 
 .Chat-header {
     border-radius: 10px;
-    background-color: #008b8b;
+    background-color: khaki;
     overflow: visible;
     width: 100%;
     text-align: center;
@@ -96,14 +97,14 @@ input.chat_input {
     padding: 5px;
     font-size: 16px;
     border-radius: 8px;
-    border: 1px solid #008b8b;
+    border: 1px solid khaki;
     flex-grow: 1;
 }
 
 button.chat_button {
     padding: 5px 10px;
     font-size: 16px;
-    background-color: #008b8b;
+    background-color: khaki;
     color: white;
     border: none;
     border-radius: 8px;
