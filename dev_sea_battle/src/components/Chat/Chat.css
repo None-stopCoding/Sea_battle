@@ -3,6 +3,13 @@
     flex-direction: column;
     justify-content: space-between;
     height: 95vh;
+    background: rgba(21, 147, 128, 0.8);
+}
+
+@media screen and (max-width: 1080px) {
+    .Chat {
+        margin-top: 30px;
+    }
 }
 
 .Chat-header {

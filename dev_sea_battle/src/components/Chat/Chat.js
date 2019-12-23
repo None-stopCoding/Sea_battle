@@ -59,7 +59,7 @@ class Chat extends Component {
 
     render() {
         return (
-            <div className="Chat" style={{background: `url('./img/chat_back.jpg) no-repeat center center cover`}}>
+            <div className="Chat">
                 <div className="Chat-header">
                     <h1>Общий чат</h1>
                 </div>

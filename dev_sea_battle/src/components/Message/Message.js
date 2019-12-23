@@ -24,7 +24,7 @@ class Message extends Component {
                         !messageFromMe &&
                         <div className="username">
                             <strong>
-                                {name} {game && '->'} {game}
+                                { name && <span>{game && `-> ${game}`}</span> }
                             }</strong>
                         </div>
                     }
