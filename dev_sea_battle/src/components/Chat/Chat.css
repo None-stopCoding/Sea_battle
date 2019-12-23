@@ -38,20 +38,21 @@
 }
 
 .Message-content {
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
 }
 
 .currentMember > .Message-content {
     align-items: flex-end;
 }
 
-.Messages-message > .avatar {
-    height: 35px;
-    width: 35px;
-    border-radius: 50%;
-    display: inline-block;
-    margin: 0 10px -10px;
-}
+/*.Messages-message > .avatar {*/
+/*    height: 35px;*/
+/*    width: 35px;*/
+/*    border-radius: 50%;*/
+/*    display: inline-block;*/
+/*    margin: 0 10px -10px;*/
+/*}*/
 
 .Message-content > .username {
     display: block;
@@ -69,10 +70,6 @@
     color: white;
     display: inline-block;
     word-wrap: break-word;
-}
-
-.currentMember > .Message-content .text {
-    /*background-color: orangered;*/
 }
 
 form.chat_form {

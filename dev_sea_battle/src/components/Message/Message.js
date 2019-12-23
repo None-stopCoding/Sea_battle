@@ -1,5 +1,6 @@
 import {Component} from "react";
 import React from "react";
+import {convertUnix} from "../../utils/Routing";
 
 class Message extends Component {
     render() {
@@ -26,7 +27,7 @@ class Message extends Component {
                         </div>
                     }
                     <div className="text" style={{backgroundColor: color}}>{text}</div>
-                    <div className="text">{time}</div>
+                    <div className="text">{convertUnix(time)}</div>
                 </div>
             </li>
         );

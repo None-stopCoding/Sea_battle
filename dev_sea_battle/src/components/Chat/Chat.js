@@ -24,7 +24,7 @@ class Chat extends Component {
     }
 
     loadMessages() {
-        const messages = this.state.messages;
+        const messages = [];
         fetch('/api/messages', {
             headers: { ...config.defaultHeaders }
         }).then(res => {
@@ -46,6 +46,8 @@ class Chat extends Component {
                     time: time
                 });
             });
+            const content = document.getElementsByClassName('Message-content');
+            content.scrollTop = content.scrollHeight;
             this.setState({messages: messages});
         }).catch(e => console.log(e));
     }
