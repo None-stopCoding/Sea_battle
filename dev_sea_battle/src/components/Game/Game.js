@@ -121,15 +121,12 @@ const Game = ({ name }) => {
 
             console.log(gameID, typeof gameID);
             console.log(score, typeof score);
-            fetch(`http://localhost:8080/api/records/${gameID}`, {
-                method: 'patch',
+            fetch(`/api/records/${gameID}`, {
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    id: gameID,
-                    score: score
-                })
+                body: JSON.stringify({score: score})
             }).then(res => {
                 if (res.status === 200) {
                     console.log(`Sent score data successfully`);
