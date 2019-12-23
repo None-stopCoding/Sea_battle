@@ -14,12 +14,13 @@
 }
 
 .Chat-header {
+    padding: 10px;
     border-radius: 10px;
     background-color: khaki;
     overflow: visible;
     width: 100%;
     text-align: center;
-    color: #f0f8ff;
+    color: black;
     margin-bottom: 10px;
     user-select: none;
 }
@@ -64,7 +65,7 @@
 
 .Message-content > .username {
     display: block;
-    color: white;
+    color: black;
     font-size: 14px;
     padding-bottom: 4px;
 }
@@ -75,7 +76,7 @@
     margin: 0;
     border-radius: 12px;
     background-color: cornflowerblue;
-    color: white;
+    color: black;
     display: inline-block;
     word-wrap: break-word;
 }
@@ -105,7 +106,7 @@ button.chat_button {
     padding: 5px 10px;
     font-size: 16px;
     background-color: khaki;
-    color: white;
+    color: black;
     border: none;
     border-radius: 8px;
     margin-left: 10px;
@@ -114,4 +115,5 @@ button.chat_button {
 
 .Input {
     margin-top: 20px;
+    padding: 10px;
 }
