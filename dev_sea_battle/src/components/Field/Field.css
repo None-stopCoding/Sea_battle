@@ -2,7 +2,11 @@
     margin: 15px;
     user-select: none;
 }
-
+@media screen and (max-width: 390px) {
+    .field {
+        width: 300px;
+    }
+}
 .row {
     display: flex;
 }

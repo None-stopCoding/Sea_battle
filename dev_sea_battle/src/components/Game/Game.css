@@ -5,6 +5,11 @@
     user-select: none;
     margin-top: 40px;
 }
+@media screen and (max-width: 560px) {
+    .game_header {
+        flex-direction: column;
+    }
+}
 
 #fields {
     margin-top: 30px;
@@ -22,10 +27,8 @@
 
 .game_header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    width: 45vw;
-    height: 170px;
 }
 
 .but__down {
