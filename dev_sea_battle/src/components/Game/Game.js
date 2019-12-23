@@ -116,13 +116,14 @@ const Game = ({ name }) => {
         if (!gameID) {
             console.log('Game ID не задан')
         } else {
+            const score = AIField.flat().filter(cell =>
+                +cell > 0 && +cell !== config.safeValue).length;
             fetch('/api/records', {
                 method: 'patch',
                 headers: { ...config.defaultHeaders },
                 body: JSON.stringify({
                     id: gameID,
-                    score: AIField.flat().filter(cell =>
-                        +cell > 0 && +cell !== config.safeValue).length
+                    score: score
                 })
             }).then(res => {
                 if (res.status === 200) {
@@ -130,7 +131,11 @@ const Game = ({ name }) => {
                 } else {
                     throw new Error(res.statusText);
                 }
-            }).catch(e => console.log(e));
+            }).catch(e => {
+                console.log(e);
+                console.log(gameID);
+                console.log(score);
+            });
         }
     };
     
