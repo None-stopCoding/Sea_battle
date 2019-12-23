@@ -27,7 +27,7 @@ class Message extends Component {
                                 {name}
                                 <span>{game && '->'}</span>
                                 {game}
-                            }</strong>
+                            </strong>
                         </div>
                     }
                     <div className="text" style={{backgroundColor: this.props.color}}>{text}</div>
