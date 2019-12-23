@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import './Enter.css';
+import {config} from "../../Config";
 
 /* Модальное окно */
 const modal = document.getElementById('id01');
@@ -13,21 +14,21 @@ const EnterPage = ({ logIn }) => {
     const [userName, setName] = useState('');
 
     const handleSubmit = (e) => {
-        // e.preventDefault();
-        // fetch('/api/users',{
-        //     method:'POST',
-        //     headers:{ ...config.defaultHeaders },
-        //     body: JSON.stringify({name: userName})
-        // }).then(res => {
-        //     if (res.status === 200) {
-        //         console.log(`login for ${userName} is successful`);
+        e.preventDefault();
+        fetch('/api/users',{
+            method:'POST',
+            headers:{ ...config.defaultHeaders },
+            body: JSON.stringify({name: userName})
+        }).then(res => {
+            if (res.status === 200) {
+                console.log(`login for ${userName} is successful`);
                 logIn(userName);
-        // } else if (res.status === 400) {
-        //     throw new Error("Польователь с таким именем уже существует")
-        // } else {
-        //     throw new Error(res.statusText);
-        // }
-        // }).catch(e => alert(e));
+        } else if (res.status === 400) {
+            throw new Error("Польователь с таким именем уже существует")
+        } else {
+            throw new Error(res.statusText);
+        }
+        }).catch(e => alert(e));
     };
 
     return(
