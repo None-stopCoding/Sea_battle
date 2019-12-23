@@ -4,7 +4,11 @@
     display: flex;
     justify-content: flex-end;
 }
-
+@media screen and (max-width: 390px) {
+    .ships {
+        flex-wrap: wrap;
+    }
+}
 .ships {
     display: flex;
     flex-direction: column;

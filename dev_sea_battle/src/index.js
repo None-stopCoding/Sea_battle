@@ -7,19 +7,19 @@ import {config} from "./Config";
 const Main = () => {
     const [userName, enter] = useState('');
 
-    // useEffect(() => {
-    //     fetch('/api/users', {
-    //         headers: { ...config.defaultHeaders }
-    //     }).then(res => {
-    //         if (res.status === 200) {
-    //             return res.json();
-    //         }
-    //         throw new Error(res.statusText);
-    //     }).then(data => {
-    //         console.log(data);
-    //         enter('blabla');
-    //     }).catch(e => console.log(`Ошибка: ${e.message}`));
-    // }, []);
+    useEffect(() => {
+        fetch('/api/users', {
+            headers: { ...config.defaultHeaders }
+        }).then(res => {
+            if (res.status === 200) {
+                return res.json();
+            }
+            throw new Error(res.statusText);
+        }).then(data => {
+            console.log(data);
+            enter('blabla');
+        }).catch(e => console.log(`Ошибка: ${e.message}`));
+    }, []);
 
     const logIn = (name) => {
         enter(name);
