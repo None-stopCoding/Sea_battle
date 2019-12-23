@@ -1,11 +1,24 @@
-#App {
+.App {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
   margin-top: 20px;
 }
 
-.logout {
+.control_buttons {
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.button__left_control {
+  cursor: pointer;
+  margin-top: 40px;
   width: 64px;
   height: 64px;
+}
+
+.inactive {
+  pointer-events: none;
+  position: fixed;
 }

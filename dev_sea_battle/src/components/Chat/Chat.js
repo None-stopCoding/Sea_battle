@@ -76,7 +76,7 @@ class Chat extends Component {
 
     onSendMessage = (text) => {
         fetch('/api/messages', {
-            method: 'post',
+            method: 'POST',
             headers: { ...config.defaultHeaders },
             body: JSON.stringify({text: text})
         }).then(res => {

@@ -8,6 +8,7 @@
 }
 
 .cell {
+    cursor: pointer;
     width: 33px;
     height: 33px;
     border: 1px solid #2c2c2c;

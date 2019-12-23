@@ -123,9 +123,7 @@ const Game = ({ name }) => {
             console.log(score, typeof score);
             fetch(`/api/records/${gameID}`, {
                 method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { ...config.defaultHeaders },
                 body: JSON.stringify({score: score})
             }).then(res => {
                 if (res.status === 200) {
@@ -235,7 +233,7 @@ const Game = ({ name }) => {
             changeMode('play');
             timer(true);
             fetch('/api/records', {
-                method: 'post',
+                method: 'POST',
                 headers: { ...config.defaultHeaders },
                 body: JSON.stringify({ game: "Морской бой" })
             }).then(res => {
@@ -281,14 +279,14 @@ const Game = ({ name }) => {
                 }
             </div>
             <div className="button_group">
-                <img src={`./img/${mode === 'prepare' ? 'power-button' : 'refresh'}.png`} alt="control"
+                <img className="but__down" src={`./img/${mode === 'prepare' ? 'power-button' : 'refresh'}.png`} alt="control"
                      onClick={() => handlePlayRestart()}/>
                 {
                     mode === 'prepare' ? (
-                        <img src={`./img/loop.png`} alt="refresh"
+                        <img className="but__down" src={`./img/loop.png`} alt="refresh"
                              onClick={() => setRefresh(true)}/>
                     ) : (
-                        <img src={`./img/${play ? "pause" : "play"}.png`} alt="timer"
+                        <img className="but__down" src={`./img/${play ? "pause" : "play"}.png`} alt="timer"
                              onClick={() => {
                                  if (play) {
                                      sendGameResult();

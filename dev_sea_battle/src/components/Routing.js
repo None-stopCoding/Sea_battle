@@ -7,3 +7,5 @@ export {default as Chat} from './Chat/Chat';
 export {default as Input} from './Input/Input';
 export {default as Messages} from './Message/Message';
 export {default as Ships} from './Ships/Ships';
+export {default as Modal} from './Modal/Modal';
+export {default as Record} from './Record/Record';

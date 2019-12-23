@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { render } from 'react-dom';
 import './index.css';
 import { App, EnterPage } from './components/Routing';
@@ -27,7 +27,7 @@ const Main = () => {
 
     const logout = () => {
         fetch('/api/users', {
-            method: 'delete',
+            method: 'DELETE',
             headers: { ...config.defaultHeaders }
         }).then(res => {
             if (res.status === 200) {
