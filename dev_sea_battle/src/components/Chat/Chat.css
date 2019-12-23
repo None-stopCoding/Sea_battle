@@ -72,6 +72,11 @@
     word-wrap: break-word;
 }
 
+.Message-content > .time {
+    font-size: 10px;
+    color: #000;
+}
+
 form.chat_form {
     display: flex;
     width: 100%;

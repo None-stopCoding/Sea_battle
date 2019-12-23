@@ -13,7 +13,7 @@ class Message extends Component {
     }
 
     renderMessage(message) {
-        const {name, text, color, isMine, game, time} = message;
+        const {name, text, isMine, game, time} = message;
         const messageFromMe = isMine;
         const className = messageFromMe ?
             "Messages-message currentMember" : "Messages-message";
@@ -23,11 +23,13 @@ class Message extends Component {
                     {
                         !messageFromMe &&
                         <div className="username">
-                            <strong>{name} -> {game}</strong>
+                            <strong>
+                                {name} {game && '->'} {game}
+                            }</strong>
                         </div>
                     }
-                    <div className="text" style={{backgroundColor: color}}>{text}</div>
-                    <div className="text">{convertUnix(time)}</div>
+                    <div className="text" style={{backgroundColor: this.props.color}}>{text}</div>
+                    <div className="time">{convertUnix(time)}</div>
                 </div>
             </li>
         );

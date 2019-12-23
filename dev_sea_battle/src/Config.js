@@ -32,5 +32,5 @@ export const config = {
     defaultHeaders: {
         'Content-Type': 'application/json; charset=utf-8'
     },
-    timeLoadChatMessages: 5000
+    timeLoadChatMessages: 2000
 };

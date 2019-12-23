@@ -14,12 +14,14 @@ function randomColor() {
 class Chat extends Component {
     state = {
         messages: [],
-        interval: null
+        interval: null,
+        color: null
     };
 
     componentDidMount() {
         this.setState({
-            interval: setInterval(() => this.loadMessages(), config.timeLoadChatMessages)
+            interval: setInterval(() => this.loadMessages(), config.timeLoadChatMessages),
+            color: randomColor()
         })
     }
 
@@ -40,7 +42,6 @@ class Chat extends Component {
                 messages.push({
                     name: user,
                     text: text,
-                    color: randomColor(),
                     isMine: isMine,
                     game: game,
                     time: time
@@ -58,12 +59,13 @@ class Chat extends Component {
 
     render() {
         return (
-            <div className="Chat">
+            <div className="Chat" style={{background: `url('./img/chat_back.jpg) no-repeat center center cover`}}>
                 <div className="Chat-header">
                     <h1>Общий чат</h1>
                 </div>
                 <Messages
                     messages={this.state.messages}
+                    color={this.state.color}
                 />
                 <Input
                     onSendMessage={this.onSendMessage}
