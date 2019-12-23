@@ -118,24 +118,18 @@ const Game = ({ name }) => {
         } else {
             const score = AIField.flat().filter(cell =>
                 +cell < 0 && +cell !== (-1) * config.safeValue).length;
-            const data = JSON.stringify({
-                id: gameID,
-                score: score
-            });
-            fetch('/api/records', {
+
+            fetch(`/api/records/${gameID}`, {
                 method: 'patch',
                 headers: { ...config.defaultHeaders },
-                body: data
+                body: JSON.stringify({score: score})
             }).then(res => {
                 if (res.status === 200) {
                     console.log(`Sent score data successfully`);
                 } else {
                     throw new Error(res.statusText);
                 }
-            }).catch(e => {
-                console.log(e);
-                console.log(data);
-            });
+            }).catch(e => console.log(e));
         }
     };
     
