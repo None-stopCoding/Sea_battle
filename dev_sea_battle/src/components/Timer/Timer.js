@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Timer.css';
+import {convertTime} from "../../utils/Routing";
 
 const Timer = ({ action }) => {
     const [time, update] = useState(0);
@@ -20,15 +21,11 @@ const Timer = ({ action }) => {
     // useEffect(() => changeStopTime(time));
 
     useEffect(() => {
-        let hours = 0, minutes = 0, seconds = 0;
+        const { hours, minutes, seconds } = convertTime(time);
 
-        hours = Math.floor(time / 3600);
-        minutes = Math.floor((time - hours * 3600) / 60);
-        seconds = time - (hours * 3600 + minutes * 60);
-
-        setHours(String(hours).padStart(2, "0"));
-        setMinutes(String(minutes).padStart(2, "0"));
-        setSeconds(String(seconds).padStart(2, "0"));
+        setHours(hours);
+        setMinutes(minutes);
+        setSeconds(seconds);
     }, [time]);
 
     return(

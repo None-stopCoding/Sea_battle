@@ -7,3 +7,4 @@ export {default as configureField} from './ConfigureField';
 export {default as createListOfEmptyCells} from './CreateEmpty';
 export {default as Point} from './Point';
 export {default as convertUnix} from './ConvertUnix';
+export {default as convertTime} from './convertTime';

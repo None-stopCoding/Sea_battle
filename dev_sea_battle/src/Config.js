@@ -33,5 +33,5 @@ export const config = {
         'Content-Type': 'application/json; charset=utf-8'
     },
     timeLoadChatMessages: 1000,
-    timeLoadRecords: 5000
+    timeLoadRecords: 1000
 };

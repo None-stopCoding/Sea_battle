@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {config} from "../../Config";
-import {convertUnix} from "../../utils/Routing";
+import {convertTime} from "../../utils/Routing";
 
 const Record = () => {
     const [records, update] = useState([]);
@@ -15,6 +15,7 @@ const Record = () => {
             headers: { ...config.defaultHeaders }
         }).then(res => {
             if (res.status === 200) {
+                console.log('Successfully loaded records');
                 return res.json();
             } else {
                 throw new Error(res.statusText);
@@ -24,6 +25,11 @@ const Record = () => {
         }).catch(e => console.log(e));
     };
 
+    const parseTime = (time) => {
+        const { hours, minutes, seconds } = convertTime(time);
+        return `${hours} : ${minutes} : ${seconds}`;
+    };
+
     return (
         <div>
             {
@@ -31,9 +37,9 @@ const Record = () => {
                     <table>
                         <tbody>
                             <tr>
-                                <th>Игрок</th>
-                                <th>Очки</th>
-                                <th>Время</th>
+                                <th className="record_header">Игрок</th>
+                                <th className="record_header">Очки</th>
+                                <th className="record_header">Время</th>
                             </tr>
                             {
                                 records.map((record, index) => {
@@ -41,7 +47,7 @@ const Record = () => {
                                         <tr key={index}>
                                             <td>{record.user}</td>
                                             <td>{record.score}</td>
-                                            <td>{convertUnix(record.time)}</td>
+                                            <td>{parseTime(record.time)}</td>
                                         </tr>
                                     )
                                 })
