@@ -119,10 +119,16 @@ const Game = ({ name }) => {
             const score = AIField.flat().filter(cell =>
                 +cell < 0 && +cell !== (-1) * config.safeValue).length;
 
+            console.log(score, typeof score);
             fetch(`/api/records/${gameID}`, {
                 method: 'patch',
-                headers: { ...config.defaultHeaders },
-                body: JSON.stringify({score: score})
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                body: JSON.stringify({
+                    id: gameID,
+                    score: score
+                })
             }).then(res => {
                 if (res.status === 200) {
                     console.log(`Sent score data successfully`);
