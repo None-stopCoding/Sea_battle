@@ -5,9 +5,9 @@
     user-select: none;
     margin-top: 40px;
 }
-@media screen and (max-width: 560px) {
-    .game_header {
-        flex-direction: column;
+
+@media screen and (max-width: 800px) {
+    #game{
     }
 }
 
@@ -15,7 +15,6 @@
     margin-top: 30px;
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
 }
 
 .button_group {
