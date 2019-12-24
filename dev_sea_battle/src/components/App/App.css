@@ -4,7 +4,7 @@
   flex-wrap: wrap;
   margin-top: 20px;
 }
-@media screen and (max-width: 1640px) {
+@media screen and (max-width: 1040px) {
   .App {
    flex-direction: column;
     height: 100%;
