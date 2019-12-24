@@ -160,7 +160,7 @@ const Game = ({ name }) => {
                             think(true);
                             setTimeout(() => {
                                 think(false);
-                                resolve(AI(copy(copyGuessField), destroyedShip, copyMemo));
+                                resolve(AI(copy(guessField), destroyedShip, copyMemo));
                             }, config.timeAIIsWaiting);
                         } else {
                             reject('finished');

@@ -20,7 +20,7 @@ const AI = (field, destroyed, points) => {
             value = +field[random.y][random.x];
         } while (value < 0 || value === 5 || field[random.y][random.x] === "0");
 
-        console.log("search start", random, field[random.y][random.x]);
+        console.log("search start", random, field);
         return {
             headRow: random.y,
             headCell: random.x
@@ -74,9 +74,16 @@ const AI = (field, destroyed, points) => {
 
         if (tail.tailCell === null) {
             console.log("search end tail == null", startPoint, endPoint, availableDirs);
-            const tryDir = availableDirs[_.random(availableDirs.length - 1)].offset;
-            tail.tailRow = startPoint.row + tryDir.row;
-            tail.tailCell = startPoint.cell + tryDir.cell;
+            if (availableDirs.length) {
+                const tryDir = availableDirs[_.random(availableDirs.length - 1)].offset;
+                tail.tailRow = startPoint.row + tryDir.row;
+                tail.tailCell = startPoint.cell + tryDir.cell;
+            } else {
+                // Баг на фикс
+                const { headRow, headCell } = searchStartPoint();
+                startPoint.row = tail.tailRow = headRow;
+                startPoint.cell = tail.tailCell = headCell;
+            }
         }
         return tail;
     };
@@ -109,7 +116,7 @@ const AI = (field, destroyed, points) => {
             tailCell = movedEndPoint.cell;
 
         if (!(checkCanVisit(tailRow, tailCell) && Math.abs(+field[tailRow][tailCell]) !== config.safeValue)) {
-            console.log("in third check can visit", field[tailRow][tailCell]);
+            console.log("in third check can visit", tailRow, tailCell);
             const newEndPoint = searchEndPoint();
             tailRow = newEndPoint.tailRow;
             tailCell = newEndPoint.tailCell;
