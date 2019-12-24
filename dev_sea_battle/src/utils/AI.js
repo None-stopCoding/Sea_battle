@@ -20,6 +20,7 @@ const AI = (field, destroyed, points) => {
             value = +field[random.y][random.x];
         } while (value < 0 || value === 5 || field[random.y][random.x] === "0");
 
+        console.log("search start", random, field[random.y][random.x]);
         return {
             headRow: random.y,
             headCell: random.x
@@ -56,19 +57,23 @@ const AI = (field, destroyed, points) => {
         const availableDirs = directions.filter(dir =>
             checkCanVisit(startPoint.row + dir.offset.row, startPoint.cell + dir.offset.cell) &&
                     !field[startPoint.row + dir.offset.row][startPoint.cell + dir.offset.cell]);
+
         if ((startPoint.row - endPoint.row) && (startPoint.cell - endPoint.cell)) {
+            console.log("search end equals", availableDirs);
             const movedEndPoint = getMovedEndPoint(startPoint);
             const tryIndex =
                 availableDirs.findIndex(dir =>
-                    dir.offset.row === movedEndPoint.row - startPoint.row &&
-                    dir.offset.cell === movedEndPoint.cell - startPoint.cell);
+                    (dir.offset.row === movedEndPoint.row - startPoint.row) &&
+                    (dir.offset.cell === movedEndPoint.cell - startPoint.cell));
             if (tryIndex !== -1) {
+                console.log("found", movedEndPoint, tryIndex);
                 tail.tailRow = startPoint.row + availableDirs[tryIndex].offset.row;
                 tail.tailCell = startPoint.cell + availableDirs[tryIndex].offset.cell;
             }
         }
 
         if (tail.tailCell === null) {
+            console.log("search end tail == null", startPoint, endPoint, availableDirs);
             const tryDir = availableDirs[_.random(availableDirs.length - 1)].offset;
             tail.tailRow = startPoint.row + tryDir.row;
             tail.tailCell = startPoint.cell + tryDir.cell;
@@ -79,25 +84,32 @@ const AI = (field, destroyed, points) => {
     if (!startPoint ||
             field[startPoint.row][startPoint.cell] === (-1) * config.safeValue ||
             destroyed) {
+        console.log("in first", startPoint, endPoint);
         const { headRow, headCell } = searchStartPoint();
         choice.row = headRow;
         choice.cell = headCell;
         ship.startPoint = copy(choice);
         ship.endPoint = copy(choice);
+        console.log("out first", choice, ship);
     } else if (!endPoint ||
             (startPoint.row === endPoint.row && startPoint.cell === endPoint.cell) ||
             field[endPoint.row][endPoint.cell] === (-1) * config.safeValue) {
+        console.log("in second", startPoint, endPoint, field[endPoint.row][endPoint.cell]);
         const { tailRow, tailCell } = searchEndPoint();
         choice.row = tailRow;
         choice.cell = tailCell;
         ship.startPoint = startPoint;
         ship.endPoint = copy(choice);
+        console.log("out second", choice, ship);
     } else {
+        console.log("in third", startPoint, endPoint);
         const movedEndPoint = getMovedEndPoint(endPoint);
+        console.log("getMoved", movedEndPoint);
         let tailRow = movedEndPoint.row,
             tailCell = movedEndPoint.cell;
 
         if (!(checkCanVisit(tailRow, tailCell) && Math.abs(+field[tailRow][tailCell]) !== config.safeValue)) {
+            console.log("in third check can visit", field[tailRow][tailCell]);
             const newEndPoint = searchEndPoint();
             tailRow = newEndPoint.tailRow;
             tailCell = newEndPoint.tailCell;
@@ -107,6 +119,7 @@ const AI = (field, destroyed, points) => {
         choice.cell = tailCell;
         ship.startPoint = startPoint;
         ship.endPoint = copy(choice);
+        console.log("out third", choice, ship);
     }
 
     return {

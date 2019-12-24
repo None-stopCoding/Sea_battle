@@ -19,7 +19,7 @@ const generateSafeArea = (field, coords, toString = false) => {
                 const cell = point.x + cellOffset;
                 if (0 <= row && row < size &&
                     0 <= cell && cell < size &&
-                    (toString ? Math.abs(field[row][cell]) === config.safeValue || !field[row][cell] : !field[row][cell])) {
+                    (toString ? Math.abs(field[row][cell]) === config.safeValue : !field[row][cell])) {
 
                     field[row][cell] = toString ? String(field[row][cell]) : safe;
                 }

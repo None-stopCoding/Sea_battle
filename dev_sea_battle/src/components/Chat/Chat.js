@@ -20,7 +20,8 @@ class Chat extends Component {
 
     componentDidMount() {
         this.setState({
-            interval: setInterval(() => this.loadMessages(), config.timeLoadChatMessages),
+            // interval: setInterval(() => this.loadMessages(), config.timeLoadChatMessages),
+            interval: setInterval(() => {}, config.timeLoadChatMessages),
             color: randomColor()
         })
     }

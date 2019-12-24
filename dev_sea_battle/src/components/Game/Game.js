@@ -29,9 +29,7 @@ const isWinner = (field) =>
     ).length;
 
 const checkShipDestroyed = (ships, row, cell) => {
-    let destroyedShip = null,
-        shipType = null,
-        destroyedIndex = null;
+    let destroyedShip = null;
     Object.entries(ships).forEach(([ship, params]) => {
         const index = params.units.findIndex(unit =>
             !!unit.filter(point =>
@@ -41,17 +39,11 @@ const checkShipDestroyed = (ships, row, cell) => {
         if (index !== -1) {
             if (++params.destroyed[index] === params.size) {
                 destroyedShip = params.units[index];
-                shipType = ship;
-                destroyedIndex = index;
                 // TODO проверить для бота
             }
         }
     });
-    return {
-        destroyedShip: destroyedShip,
-        shipType: shipType,
-        destroyedIndex: destroyedIndex
-    }
+    return destroyedShip;
 };
 
 /**
@@ -140,14 +132,8 @@ const Game = ({ name }) => {
 
             configureField(copyAIField, row, cell);
             if (+copyAIField[row][cell] !== (-1) * config.safeValue) {
-                const { destroyedShip: ship,
-                        shipType: type,
-                        destroyedIndex: index } = checkShipDestroyed(AIShips, row, cell);
+                const ship = checkShipDestroyed(AIShips, row, cell);
                 if (ship) {
-                    const copyAIShips = copy(AIShips);
-                    copyAIShips[type].units.splice(index, 1);
-                    setAIShips(copyAIShips);
-
                     generateSafeArea(copyAIField, ship, true);
                     checkVictory('person', copyAIField);
                 }
@@ -187,15 +173,9 @@ const Game = ({ name }) => {
                         destroyedShip = false;
                         copyMemo = rest;
                         copyGuessField[rowAI][cellAI] = value = configureField(copyPlayerField, rowAI, cellAI);
-                        const { destroyedShip: ship,
-                                shipType: type,
-                                destroyedIndex: index } = checkShipDestroyed(playerShips, rowAI, cellAI);
+                        const ship = checkShipDestroyed(playerShips, rowAI, cellAI);
                         if (ship) {
                             destroyedShip = true;
-                            const copyPlayerShips = copy(playerShips);
-                            copyPlayerShips[type].units.splice(index, 1);
-                            setPlayerShips(copyPlayerShips);
-
                             generateSafeArea(copyPlayerField, ship, true);
                             generateSafeArea(copyGuessField, ship, true);
                             victory = checkVictory('AI', copyPlayerField);
