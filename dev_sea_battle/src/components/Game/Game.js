@@ -93,18 +93,16 @@ const Game = ({ name }) => {
 
 
     useEffect(() => {
-        if (didMountRef.current) {
-            if (hasWon.status) {
-                showModal();
-                changeMode('prepare');
-                timer(false);
-                setVictory({
-                    status: false,
-                    person: ''
-                });
-                sendGameResult();
-            }
-        } else didMountRef.current = true
+        if (hasWon.status) {
+            showModal();
+            changeMode('prepare');
+            timer(false);
+            setVictory({
+                status: false,
+                person: ''
+            });
+            sendGameResult();
+        }
     });
 
     const sendGameResult = () => {

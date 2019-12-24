@@ -15,20 +15,20 @@ const EnterPage = ({ logIn }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // fetch('/api/users',{
-        //     method:'POST',
-        //     headers:{ ...config.defaultHeaders },
-        //     body: JSON.stringify({name: userName})
-        // }).then(res => {
-        //     if (res.status === 200) {
-        //         console.log(`login for ${userName} is successful`);
+        fetch('/api/users',{
+            method:'POST',
+            headers:{ ...config.defaultHeaders },
+            body: JSON.stringify({name: userName})
+        }).then(res => {
+            if (res.status === 200) {
+                console.log(`login for ${userName} is successful`);
                 logIn(userName);
-        // } else if (res.status === 400) {
-        //     throw new Error("Польователь с таким именем уже существует")
-        // } else {
-        //     throw new Error(res.statusText);
-        // }
-        // }).catch(e => alert(e));
+        } else if (res.status === 400) {
+            throw new Error("Польователь с таким именем уже существует")
+        } else {
+            throw new Error(res.statusText);
+        }
+        }).catch(e => alert(e));
     };
 
     return(
