@@ -237,7 +237,7 @@ const Game = ({ name }) => {
     return (
         <div id="game">
             <Modal show={show} onClose={showModal}>
-                {hasWon.person !== 'person' ? 'Это поражение...Увы :(' : 'Поздравляем! Вы победили!'}
+                {hasWon.person === 'AI' ? 'Это поражение...Увы :(' : 'Поздравляем! Вы победили!'}
             </Modal>
             {
                 mode === 'play' &&
