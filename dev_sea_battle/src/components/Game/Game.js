@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import _ from 'underscore';
 import './Game.css';
-import { Field, Timer, Ships } from './../Routing';
+import {Field, Timer, Ships, Modal, Record} from './../Routing';
 import { initialField, AI, generateShip,
          copy, generateSafeArea, configureField } from "../../utils/Routing";
 import {config} from "../../Config";
@@ -66,8 +66,13 @@ const Game = ({ name }) => {
         status: false,
         person: ''
     });
+    const didMountRef = useRef(false);
     const [play, timer] = useState(true);
-    // const [stopTime, changeStopTime] = useState(0);
+    const [show, toggle] = useState(false);
+
+    const showModal = (e) => {
+        toggle(prev => !prev);
+    };
 
     useEffect(() => {
         if (mode === 'prepare' || refresh) {
@@ -86,22 +91,20 @@ const Game = ({ name }) => {
         }
     }, [mode, refresh]);
 
-    useEffect(() => {
-        if (hasWon.status) {
-            if (hasWon.person === 'person') {
-                alert('Поздравляем! Вы победили!');
-            } else {
-                alert('Это поражение...Увы :(');
-            }
 
-            changeMode('prepare');
-            timer(false);
-            setVictory({
-                status: false,
-                person: ''
-            });
-            sendGameResult();
-        }
+    useEffect(() => {
+        if (didMountRef.current) {
+            if (hasWon.status) {
+                showModal();
+                changeMode('prepare');
+                timer(false);
+                setVictory({
+                    status: false,
+                    person: ''
+                });
+                sendGameResult();
+            }
+        } else didMountRef.current = true
     });
 
     const sendGameResult = () => {
@@ -235,6 +238,9 @@ const Game = ({ name }) => {
 
     return (
         <div id="game">
+            <Modal show={show} onClose={showModal}>
+                {hasWon.person !== 'person' ? 'Это поражение...Увы :(' : 'Поздравляем! Вы победили!'}
+            </Modal>
             {
                 mode === 'play' &&
                 <div className="game_header">
