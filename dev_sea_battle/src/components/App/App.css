@@ -4,6 +4,15 @@
   flex-wrap: wrap;
   margin-top: 20px;
 }
+@media screen and (max-width: 1560px) {
+  .App {
+    flex-direction: column;
+  }
+  .control_buttons {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
 
 .control_buttons {
   user-select: none;
@@ -13,9 +22,7 @@
 
 .button__left_control {
   cursor: pointer;
-  margin-top: 40px;
-  width: 64px;
-  height: 64px;
+  margin-left: 10px;
 }
 
 .inactive {

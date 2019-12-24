@@ -8,15 +8,13 @@
     margin-top: 20px;
 }
 
-@media screen and (max-width: 775px) {
+@media screen and (max-width: 1560px) {
     .Chat {
-        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
         height: 55vh;
     }
-}
-@media screen and (max-width: 390px) {
     input.chat_input {
-        width: 90%;
     }
 }
 .Chat-header {
